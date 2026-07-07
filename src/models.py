@@ -46,3 +46,16 @@ class admin(classmethod):
         super().__init__(personID,personName,personGender,personAge)
         self._politicalAppearance=politicalAppearance
         self._professionalTitle=professionalTitle
+        
+#教师兼行政人员
+class teacher_admin(teacher,admin):
+    def __init__(self,personID:str,personName:str,personGender:str,personAge:str,
+                 major:str,professionalTitle:str,
+                 politicalAppearance:str):
+        '''
+        教师兼行政人员类：编号，姓名，性别，年龄，所在系部，专业，职称，政治面貌
+        '''
+        teacher.__init__(self,personID,personName,personGender,personAge,
+                         major,professionalTitle)
+        admin.__init__(self,personID,personName,personGender,personAge,
+                       politicalAppearance,professionalTitle)
