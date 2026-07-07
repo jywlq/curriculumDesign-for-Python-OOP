@@ -10,6 +10,15 @@ class baseClass:
         self._personName=personName
         self._personGender=personGender
         self._personAge=personAge
+        
+    def to_dict(self):
+        return {
+            'personID': self._personID,
+            'personName': self._personName,
+            'personGender': self._personGender,
+            'personAge': self._personAge
+        }
+    
 
 #教师
 class teacher(baseClass):
@@ -21,6 +30,14 @@ class teacher(baseClass):
         super().__init__(personID,personName,personGender,personAge)
         self._major=major
         self._professionalTitle=professionalTitle
+        
+    def to_dict(self):
+        data = super().to_dict()
+        data.update({
+            'major': self._major,
+            'professionalTitle': self._professionalTitle
+        })
+        return data
 
 
 
@@ -36,6 +53,14 @@ class experimenter(baseClass):
         self._laboratory=laboratory
         self._duties=duties
         
+    def to_dict(self):
+        data = super().to_dict()
+        data.update({
+            'laboratory': self._laboratory,
+            'duties': self._duties
+        })
+        return data
+        
 #行政人员
 class admin(classmethod):
     def __init__(self,personID:str,personName:str,personGender:str,personAge:str,
@@ -46,6 +71,14 @@ class admin(classmethod):
         super().__init__(personID,personName,personGender,personAge)
         self._politicalAppearance=politicalAppearance
         self._professionalTitle=professionalTitle
+        
+    def to_dict(self):
+        data = super().to_dict()
+        data.update({
+            'politicalAppearance': self._politicalAppearance,
+            'professionalTitle': self._professionalTitle
+        })
+        return data
         
 #教师兼行政人员
 class teacher_admin(teacher,admin):
@@ -59,3 +92,13 @@ class teacher_admin(teacher,admin):
                          major,professionalTitle)
         admin.__init__(self,personID,personName,personGender,personAge,
                        politicalAppearance,professionalTitle)
+        
+    def to_dict(self):
+        data = super().to_dict()
+        data.update({
+            'major': self._major,
+            'professionalTitle': self._professionalTitle,
+            'politicalAppearance': self._politicalAppearance
+        })
+        return data
+    
