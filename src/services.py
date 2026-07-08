@@ -1,5 +1,5 @@
 # 业务逻辑类（增删改查、文件读写）
-from src.models import baseClass,teacher,experimenter,admin,teacher_admin
+from src.models import teacher,experimenter,admin,teacher_admin
 import json
 
 
@@ -17,7 +17,7 @@ class personService:
                 return True
         return False
 
-    def addPerson(self,person:baseClass):
+    def addPerson(self,person):
         '''
         按类添加
         '''
@@ -45,7 +45,7 @@ class personService:
                 return True
         return False
     
-    def updatePerson(self,personID:str,person:baseClass):
+    def updatePerson(self,personID:str,person):
         if self.personIDcheck(person._personID) and personID!=person._personID:
             '''
             双重检查，防止编号冲突并允许修改自身
@@ -57,6 +57,27 @@ class personService:
                 return True
         return False
     
+    def getPersonStatistics(self):
+        '''
+        统计各类人数，先检查子类再检查父类避免重复计数
+        '''
+        res={"教师":0,"实验员":0,"行政人员":0,"教师兼行政人员":0}
+        for p in self.personList:
+            if isinstance(p,teacher_admin):
+                res["教师兼行政人员"]+=1
+            elif isinstance(p,teacher):
+                res["教师"]+=1
+            elif isinstance(p,experimenter):
+                res["实验员"]+=1
+            elif isinstance(p,admin):
+                res["行政人员"]+=1
+        return res
+
+        
+
+    '''
+    核心save和load方法，供外部调用  
+    '''
     
     def save(self,filename:str='data/person.json'):
         '''
@@ -66,32 +87,22 @@ class personService:
             json.dump([p.to_dict() for p in self.personList],
                       f,ensure_ascii=False,indent=4)
             
-            
-    '''
-    核心save和load方法，供外部调用  
-    '''
+    
     def load(self,filename:str='data/person.json'):
         '''
         由调用方决定何时加载，main层调用
         '''
-        classMap={c.__name__:c for c in [baseClass,teacher,experimenter,admin,teacher_admin]}
+        classMap={c.__name__:c for c in [teacher,experimenter,admin,teacher_admin]}
         #classmap方法：将类名映射到类对象，便于从字典中恢复对象
         try:
             with open(filename,'r',encoding='utf-8') as f:
                 data_list=json.load(f)
             self.personList.clear()
             for d in data_list:
-                cls=classMap.get(d.get('__class__','baseClass'),baseClass)
+                cls=classMap.get(d.get('__class__'),teacher)
                 self.personList.append(cls.from_dict(d))
         except FileNotFoundError:
             pass
     
-    '''
-    test
-    '''
     def __str__(self):
         return ''.join([str(p)+'\n' for p in self.personList])
-    
-    '''
-    testEnd
-    '''

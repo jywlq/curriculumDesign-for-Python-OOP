@@ -27,6 +27,9 @@ class baseClass:
     def __repr__(self):
         return f"baseClass(personID={self._personID}, personName={self._personName}, personGender={self._personGender}, personAge={self._personAge})"
 
+    def __str__(self):
+        return f"{self._personName}({self._personID})，{self._personGender}，{self._personAge}岁"
+
 
 #教师
 class teacher(baseClass):
@@ -54,7 +57,10 @@ class teacher(baseClass):
         return data
 
     def __repr__(self):
-        return f"teacher(personID={self._personID}, personName={self._personName}, major={self._major}, professionalTitle={self._professionalTitle})"
+        return f"teacher(personID={self._personID}, personName={self._personName}, personGender={self._personGender}, personAge={self._personAge}, major={self._major}, professionalTitle={self._professionalTitle})"
+
+    def __str__(self):
+        return f"{self._personName}({self._personID})，{self._personGender}，{self._personAge}岁，{self._major}，{self._professionalTitle}"
 
 
 #实验员
@@ -83,7 +89,10 @@ class experimenter(baseClass):
         return data
 
     def __repr__(self):
-        return f"experimenter(personID={self._personID}, personName={self._personName}, laboratory={self._laboratory}, duties={self._duties})"
+        return f"experimenter(personID={self._personID}, personName={self._personName}, personGender={self._personGender}, personAge={self._personAge}, laboratory={self._laboratory}, duties={self._duties})"
+
+    def __str__(self):
+        return f"{self._personName}({self._personID})，{self._personGender}，{self._personAge}岁，{self._laboratory}，{self._duties}"
 
 #行政人员
 class admin(baseClass):
@@ -111,7 +120,10 @@ class admin(baseClass):
         return data
 
     def __repr__(self):
-        return f"admin(personID={self._personID}, personName={self._personName}, politicalAppearance={self._politicalAppearance}, professionalTitle={self._professionalTitle})"
+        return f"admin(personID={self._personID}, personName={self._personName}, personGender={self._personGender}, personAge={self._personAge}, politicalAppearance={self._politicalAppearance}, professionalTitle={self._professionalTitle})"
+
+    def __str__(self):
+        return f"{self._personName}({self._personID})，{self._personGender}，{self._personAge}岁，{self._politicalAppearance}，{self._professionalTitle}"
 
 #教师兼行政人员
 class teacher_admin(teacher,admin):
@@ -139,4 +151,7 @@ class teacher_admin(teacher,admin):
         return data
 
     def __repr__(self):
-        return f"teacher_admin(personID={self._personID}, personName={self._personName}, major={self._major}, professionalTitle={self._professionalTitle}, politicalAppearance={self._politicalAppearance})"
+        return f"teacher_admin(personID={self._personID}, personName={self._personName}, personGender={self._personGender}, personAge={self._personAge}, major={self._major}, professionalTitle={self._professionalTitle}, politicalAppearance={self._politicalAppearance})"
+
+    def __str__(self):
+        return f"{self._personName}({self._personID})，{self._personGender}，{self._personAge}岁，{self._major}，{self._professionalTitle}，{self._politicalAppearance}"
