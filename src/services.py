@@ -16,22 +16,12 @@ class personService:
         '''
         前缀查询
         '''
-        ID,Name=[],[]#暂存列表
-        if personID!=' ':
-            for p in self.personList:
-                if p._personID.startswith(personID):
-                    ID.append(p)
-        if personName!=' ':
-            for p in self.personList:
-                if p._personName.startswith(personName):
-                    Name.append(p)
-        if not ID and not Name:
+        if not personID and not personName:
             return self.personList
-        elif not ID:
-            return Name
-        elif not Name:
-            return ID
-        else:
-            return list(set(ID).intersection(set(Name)))
+        result=[]
+        for p in self.personList:
+            if p._personID.startswith(personID) and p._personName.startswith(personName):
+                result.append(p)
+        return result
     
     
