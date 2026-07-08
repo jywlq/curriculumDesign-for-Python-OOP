@@ -10,6 +10,7 @@ class baseClass:
         self._personName=personName
         self._personGender=personGender
         self._personAge=personAge
+        self._deleted=False  #deleted表示是否删除
         
     def to_dict(self):
         return {
@@ -18,6 +19,9 @@ class baseClass:
             'personGender': self._personGender,
             'personAge': self._personAge
         }
+    
+    def __repr__(self):
+        return f"baseClass(personID={self._personID}, personName={self._personName}, personGender={self._personGender}, personAge={self._personAge})"
     
 
 #教师
@@ -38,7 +42,12 @@ class teacher(baseClass):
             'professionalTitle': self._professionalTitle
         })
         return data
-
+    
+    def __repr__(self):
+        super_repr = super().__repr__()
+        return f"teacher({super_repr}, major={self._major}, professionalTitle={self._professionalTitle})"
+    
+    
 
 
 
@@ -60,9 +69,13 @@ class experimenter(baseClass):
             'duties': self._duties
         })
         return data
+    
+    def __repr__(self):
+        super_repr = super().__repr__()
+        return f"experimenter({super_repr}, laboratory={self._laboratory}, duties={self._duties})"
         
 #行政人员
-class admin(classmethod):
+class admin(baseClass):
     def __init__(self,personID:str,personName:str,personGender:str,personAge:str,
                  politicalAppearance:str,professionalTitle:str,):
         '''
@@ -79,6 +92,10 @@ class admin(classmethod):
             'professionalTitle': self._professionalTitle
         })
         return data
+    
+    def __repr__(self):
+        super_repr = super().__repr__()
+        return f"admin({super_repr}, politicalAppearance={self._politicalAppearance}, professionalTitle={self._professionalTitle})"
         
 #教师兼行政人员
 class teacher_admin(teacher,admin):
@@ -101,4 +118,8 @@ class teacher_admin(teacher,admin):
             'politicalAppearance': self._politicalAppearance
         })
         return data
+    
+    def __repr__(self):
+        super_repr = super().__repr__()
+        return f"teacher_admin({super_repr}, major={self._major}, professionalTitle={self._professionalTitle}, politicalAppearance={self._politicalAppearance})"
     
