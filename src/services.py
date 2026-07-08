@@ -26,45 +26,41 @@ class personService:
                 result.append(p)
         return result
     
-    def deletePerson(self,person:baseClass):
+    def deletePerson(self,personID:str):
         for p in self.personList:
-            if p is person:
-                p._deleted=True
-                '''
-                标记删除，避免移动列表后续元素，提高效率
-                '''
-                self.save()
-                return
-    def save(self,filename:str='data/person.json'):#存储
+            if p._personID==personID:
+                self.personList.remove(p)
+                return True
+        return False
+    def save(self,filename:str='data/person.json'):
+        '''
+        由调用方决定何时保存，main层调用
+        '''
         with open(filename,'w',encoding='utf-8') as f:
-            json.dump([p.to_dict() for p in self.personList if not p._deleted],
+            json.dump([p.to_dict() for p in self.personList],
                       f,ensure_ascii=False,indent=4)
             
-    def load(self,filename:str='data/person.json'):#加载
+    def load(self,filename:str='data/person.json'):
+        '''
+        由调用方决定何时加载，main层调用
+        '''
+        classMap={c.__name__:c for c in [baseClass,teacher,experimenter,admin,teacher_admin]}
         try:
             with open(filename,'r',encoding='utf-8') as f:
                 data_list=json.load(f)
             self.personList.clear()
             for d in data_list:
-                pid=d['personID']
-                pname=d['personName']
-                pgender=d['personGender']
-                page=d['personAge']
-                if 'major' in d and 'politicalAppearance' in d:
-                    obj=teacher_admin(pid,pname,pgender,page,
-                                      d['major'],d['professionalTitle'],d['politicalAppearance'])
-                elif 'major' in d:
-                    obj=teacher(pid,pname,pgender,page,
-                                d['major'],d['professionalTitle'])
-                elif 'laboratory' in d:
-                    obj=experimenter(pid,pname,pgender,page,
-                                     d['laboratory'],d['duties'])
-                elif 'politicalAppearance' in d:
-                    obj=admin(pid,pname,pgender,page,
-                              d['politicalAppearance'],d['professionalTitle'])
-                else:
-                    obj=baseClass(pid,pname,pgender,page)
-                self.personList.append(obj)
+                cls=classMap.get(d.get('__class__','baseClass'),baseClass)
+                self.personList.append(cls.from_dict(d))
         except FileNotFoundError:
             pass
-        return self.personList
+    
+    '''
+    test
+    '''
+    def __str__(self):
+        return str([str(p) for p in self.personList])
+    
+    '''
+    testEnd
+    '''

@@ -1,1 +1,20 @@
-[]
+[
+    {
+        "__class__": "teacher",
+        "personID": "T001",
+        "personName": "张三",
+        "personGender": "男",
+        "personAge": "35",
+        "major": "计算机系",
+        "professionalTitle": "副教授"
+    },
+    {
+        "__class__": "experimenter",
+        "personID": "E001",
+        "personName": "李四",
+        "personGender": "女",
+        "personAge": "28",
+        "laboratory": "化学实验室",
+        "duties": "实验员"
+    }
+]

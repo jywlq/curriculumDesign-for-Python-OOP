@@ -10,19 +10,23 @@ class baseClass:
         self._personName=personName
         self._personGender=personGender
         self._personAge=personAge
-        self._deleted=False  #deleted表示是否删除
-        
+
+    @classmethod
+    def from_dict(cls,d:dict):
+        return cls(d['personID'],d['personName'],d['personGender'],d['personAge'])
+
     def to_dict(self):
         return {
+            '__class__': 'baseClass',
             'personID': self._personID,
             'personName': self._personName,
             'personGender': self._personGender,
             'personAge': self._personAge
         }
-    
+
     def __repr__(self):
         return f"baseClass(personID={self._personID}, personName={self._personName}, personGender={self._personGender}, personAge={self._personAge})"
-    
+
 
 #教师
 class teacher(baseClass):
@@ -34,21 +38,23 @@ class teacher(baseClass):
         super().__init__(personID,personName,personGender,personAge)
         self._major=major
         self._professionalTitle=professionalTitle
-        
+
+    @classmethod
+    def from_dict(cls,d:dict):
+        return cls(d['personID'],d['personName'],d['personGender'],d['personAge'],
+                   d['major'],d['professionalTitle'])
+
     def to_dict(self):
         data = super().to_dict()
         data.update({
+            '__class__': 'teacher',
             'major': self._major,
             'professionalTitle': self._professionalTitle
         })
         return data
-    
-    def __repr__(self):
-        super_repr = super().__repr__()
-        return f"teacher({super_repr}, major={self._major}, professionalTitle={self._professionalTitle})"
-    
-    
 
+    def __repr__(self):
+        return f"teacher(personID={self._personID}, personName={self._personName}, major={self._major}, professionalTitle={self._professionalTitle})"
 
 
 #实验员
@@ -61,42 +67,52 @@ class experimenter(baseClass):
         super().__init__(personID,personName,personGender,personAge)
         self._laboratory=laboratory
         self._duties=duties
-        
+
+    @classmethod
+    def from_dict(cls,d:dict):
+        return cls(d['personID'],d['personName'],d['personGender'],d['personAge'],
+                   d['laboratory'],d['duties'])
+
     def to_dict(self):
         data = super().to_dict()
         data.update({
+            '__class__': 'experimenter',
             'laboratory': self._laboratory,
             'duties': self._duties
         })
         return data
-    
+
     def __repr__(self):
-        super_repr = super().__repr__()
-        return f"experimenter({super_repr}, laboratory={self._laboratory}, duties={self._duties})"
-        
+        return f"experimenter(personID={self._personID}, personName={self._personName}, laboratory={self._laboratory}, duties={self._duties})"
+
 #行政人员
 class admin(baseClass):
     def __init__(self,personID:str,personName:str,personGender:str,personAge:str,
-                 politicalAppearance:str,professionalTitle:str,):
+                 politicalAppearance:str,professionalTitle:str):
         '''
         行政人员类：编号，姓名，性别，年龄，政治面貌，职称
         '''
         super().__init__(personID,personName,personGender,personAge)
         self._politicalAppearance=politicalAppearance
         self._professionalTitle=professionalTitle
-        
+
+    @classmethod
+    def from_dict(cls,d:dict):
+        return cls(d['personID'],d['personName'],d['personGender'],d['personAge'],
+                   d['politicalAppearance'],d['professionalTitle'])
+
     def to_dict(self):
         data = super().to_dict()
         data.update({
+            '__class__': 'admin',
             'politicalAppearance': self._politicalAppearance,
             'professionalTitle': self._professionalTitle
         })
         return data
-    
+
     def __repr__(self):
-        super_repr = super().__repr__()
-        return f"admin({super_repr}, politicalAppearance={self._politicalAppearance}, professionalTitle={self._professionalTitle})"
-        
+        return f"admin(personID={self._personID}, personName={self._personName}, politicalAppearance={self._politicalAppearance}, professionalTitle={self._professionalTitle})"
+
 #教师兼行政人员
 class teacher_admin(teacher,admin):
     def __init__(self,personID:str,personName:str,personGender:str,personAge:str,
@@ -107,19 +123,20 @@ class teacher_admin(teacher,admin):
         '''
         teacher.__init__(self,personID,personName,personGender,personAge,
                          major,professionalTitle)
-        admin.__init__(self,personID,personName,personGender,personAge,
-                       politicalAppearance,professionalTitle)
-        
+        self._politicalAppearance=politicalAppearance
+
+    @classmethod
+    def from_dict(cls,d:dict):
+        return cls(d['personID'],d['personName'],d['personGender'],d['personAge'],
+                   d['major'],d['professionalTitle'],d['politicalAppearance'])
+
     def to_dict(self):
-        data = super().to_dict()
+        data = teacher.to_dict(self)
         data.update({
-            'major': self._major,
-            'professionalTitle': self._professionalTitle,
+            '__class__': 'teacher_admin',
             'politicalAppearance': self._politicalAppearance
         })
         return data
-    
+
     def __repr__(self):
-        super_repr = super().__repr__()
-        return f"teacher_admin({super_repr}, major={self._major}, professionalTitle={self._professionalTitle}, politicalAppearance={self._politicalAppearance})"
-    
+        return f"teacher_admin(personID={self._personID}, personName={self._personName}, major={self._major}, professionalTitle={self._professionalTitle}, politicalAppearance={self._politicalAppearance})"
