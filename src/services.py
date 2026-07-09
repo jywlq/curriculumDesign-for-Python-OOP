@@ -7,7 +7,7 @@ class personService:
     def __init__(self):
         self.personList=[]
 
-    def personIDcheck(self,personID:str):
+    def personIDCheck(self,personID:str):
         '''
         检查编号是否存在
         '''
@@ -20,8 +20,7 @@ class personService:
         '''
         按类添加
         '''
-        if self.personIDcheck(person._personID):
-            return False
+        #此处ID check在ui层实现
         self.personList.append(person)
         return True
 
@@ -41,7 +40,7 @@ class personService:
         '''
         双重检查，防止编号冲突并允许修改自身
         '''
-        if self.personIDcheck(person._personID) and personID!=person._personID:
+        if self.personIDCheck(person._personID) and personID!=person._personID:
             return False
         for i,p in enumerate(self.personList):
             if p._personID==personID:
@@ -50,6 +49,9 @@ class personService:
         return False
 
     def deletePerson(self,personID:str):
+        '''
+        删除人员
+        '''
         for p in self.personList:
             if p._personID==personID:
                 self.personList.remove(p)
@@ -87,12 +89,12 @@ class personService:
         classMap={c.__name__:c for c in [teacher,experimenter,admin,teacher_admin]}
         try:
             with open(filename,'r',encoding='utf-8') as f:
-                data_list=json.load(f)
+                dataList=json.load(f)
             self.personList.clear()
-            for d in data_list:
+            for d in dataList:
                 cls=classMap.get(d.get('__class__'),teacher)
                 self.personList.append(cls.from_dict(d))
-        except FileNotFoundError:
+        except (FileNotFoundError,json.JSONDecodeError):
             pass
 
     def __str__(self):
