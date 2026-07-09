@@ -45,6 +45,7 @@ htmlcov/
 
 #AI
 .mimocode
+AGENTS.md
 
 #git
 .gitignore

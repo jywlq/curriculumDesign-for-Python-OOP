@@ -84,7 +84,7 @@ class personService:
 
     def load(self,filename:str='data/person.json'):
         '''
-        由调用方决定何时加载，main层调用
+        调用方决定何时加载，main层调用
         '''
         classMap={c.__name__:c for c in [teacher,experimenter,admin,teacher_admin]}
         try:

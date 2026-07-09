@@ -25,52 +25,20 @@ class CmdUI:
         '''
         self.MENU={
             "1":self.addPerson,
-            "2":self.deletePerson,
-            "3":self.updatePerson,
-            "4":self.findPerson,
-            "5":self.getStatisticPerson,
+            "2":self.findPerson,
+            "3":self.showAllPerson,
+            "4":self.updatePerson,
+            "5":self.deletePerson,
+            "6":self.getPersonStatistics,
+            "7":self.autoSave,
+            "8":self.service.save,
+            "9":self.service.load,
         }
-    def deletePerson(self):pass
-    def updatePerson(self):pass
-    def findPerson(self):pass
-    def getStatisticPerson(self):pass
-
-    def inputWithBack(self, value:str):
-        '''
-        带返回功能的输入，输入0抛BackToMenu异常
-        '''
-        if value=='0':
-            raise BackToMenu()
-        return value
-
-    def isEmpty(self, value:str):
-        '''
-        判空，为空返回True并打印提示
-        '''
-        if not value.strip():
-            print('输入不能为空')
-            return True
-        return False
-
-    def clearScreen(self):
-        '''
-        清屏
-        '''
-        if os.name=='nt':
-            os.system('cls')
-        else:
-            os.system('clear')
-
-    def showMenu(self):
-        print('欢迎使用人员信息管理系统')
-        print('1. 添加人员')
-        print('2. 删除人员')
-        print('3. 修改人员信息')
-        print('4. 查询人员信息')
-        print('5. 统计人员信息')
-        print('0. 退出系统')
-
+        
     def run(self):
+        '''
+        主循环
+        '''
         self.service.load()
         try:
             while True:
@@ -89,6 +57,66 @@ class CmdUI:
         except KeyboardInterrupt:
             self.service.save()
             print('\n已保存，退出系统')
+            
+    def findPerson(self):pass
+        
+    def showAllPerson(self):
+        try:
+            self.clearScreen()
+            print("=========所有人员列表如下=========")
+            for p in self.service.personList:
+                print(p)
+            input("按enter返回上级菜单")
+        except KeyboardInterrupt:
+            return
+            
+        
+    def updatePerson(self):pass
+    def deletePerson(self):pass
+    def getPersonStatistics(self):pass
+    def autoSave(self):pass
+    def save(self):pass
+    def loadData(self):pass
+
+    def inputWithBack(self, value:str):
+        '''
+        带返回功能的输入，0返回BackToMenu异常
+        '''
+        if value=='0':
+            raise BackToMenu()
+        return value
+
+    def isEmpty(self, value:str):
+        '''
+        判空，为空返回True打印提示
+        '''
+        if not value.strip():
+            print('输入不能为空')
+            return True
+        return False
+
+    def clearScreen(self):
+        '''
+        清屏
+        '''
+        if os.name=='nt':
+            os.system('cls')#Windows
+        else:
+            os.system('clear')#Linux/Mac
+
+    def showMenu(self):
+        print('欢迎使用人员信息管理系统')
+        print('1. 添加人员')
+        print('2. 查询人员')
+        print('3. 显示人员')
+        print('4. 修改人员')
+        print('5. 删除人员')
+        print('6. 统计人员')
+        print('7. 自动保存')
+        print('8. 手动保存')
+        print('9. 读取数据')
+        print('0. 退出系统')
+
 
     def selectType(self):
         '''
@@ -179,5 +207,4 @@ class CmdUI:
         except BackToMenu:
             return
         except KeyboardInterrupt:
-            self.service.save()
             return
