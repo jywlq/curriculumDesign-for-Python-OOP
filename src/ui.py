@@ -7,6 +7,17 @@ class BackToMenu(Exception):pass
 
 
 class CmdUI:
+    PERSON_TYPE={                               #字典映射类
+        "1":teacher,
+        "2":experimenter,
+        "3":admin,
+        "4":teacher_admin,
+        "老师":teacher,
+        "实验员":experimenter,
+        "行政人员":admin,
+        "老师兼行政人员":teacher_admin
+    }
+
     def __init__(self):
         self.service=personService()
         '''
@@ -42,6 +53,9 @@ class CmdUI:
         return False
 
     def clearScreen(self):
+        '''
+        清屏
+        '''
         if os.name=='nt':
             os.system('cls')
         else:
@@ -76,74 +90,84 @@ class CmdUI:
             self.service.save()
             print('\n已保存，退出系统')
 
+    def selectType(self):
+        '''
+        选择人员类型，返回类对象
+        '''
+        while True:
+            personType=self.inputWithBack(input("请输入人员类型或序号(1.老师/2.实验员/3.行政人员/4.老师兼行政人员)："))
+            if self.isEmpty(personType):
+                continue
+            personClass=self.PERSON_TYPE.get(personType)
+            if not personClass:
+                print('无效的人员类型，请重新输入')
+                continue
+            return personClass
+
+    def collectBaseInfo(self):
+        '''
+        收集baseClass的四个字段，返回字典
+        '''
+        while True:
+            id=self.inputWithBack(input("请输入编号："))
+            if self.isEmpty(id):
+                continue
+            if not id.isascii() or not id.isalnum():
+                print('编号只能包含字母和数字，请重新输入')
+                continue
+            if self.service.personIDCheck(id):
+                print('编号已存在，请重新输入')
+                continue
+            break
+        while True:
+            name=self.inputWithBack(input("请输入姓名："))
+            if self.isEmpty(name):
+                continue
+            break
+        while True:
+            gender=self.inputWithBack(input("请输入性别："))
+            if self.isEmpty(gender):
+                continue
+            if gender not in ('男','女'):
+                print('性别只能是男或女，请重新输入')
+                continue
+            break
+        while True:
+            ageStr = self.inputWithBack(input("请输入年龄："))
+            if self.isEmpty(ageStr):
+                continue
+            try:
+                age = int(ageStr)
+                if 1 <= age <= 150:
+                    break
+                else:
+                    print("年龄必须在1到150之间")
+            except ValueError:
+                print("年龄必须是一个整数")
+        return {"personID":id,"personName":name,"personGender":gender,"personAge":age}
+
+    def collectExtraFields(self, personClass):
+        '''
+        收集类特有字段，调用getFields()获取字段列表，返回字典
+        '''
+        data={}
+        for field,prompt in personClass.getFields():
+            while True:
+                value=self.inputWithBack(input(f"请输入{prompt}："))
+                if self.isEmpty(value):
+                    continue
+                data[field]=value
+                break
+        return data
+
     def addPerson(self):
-        PERSON_TYPE={                           #局部字典映射类
-            "1":teacher,
-            "2":experimenter,
-            "3":admin,
-            "4":teacher_admin,
-            "老师":teacher,
-            "实验员":experimenter,
-            "行政人员":admin,
-            "老师兼行政人员":teacher_admin
-        }
-        PERSON_FIELDS={                         #局部字典映射类对应的字段和提示
-            teacher:[("major","专业"),("professionalTitle","职称")],
-            experimenter:[("laboratory","实验室"),("duties","职务")],
-            admin:[("politicalAppearance","政治面貌"),("professionalTitle","职称")],
-            teacher_admin:[("major","专业"),("professionalTitle","职称"),("politicalAppearance","政治面貌")]
-        }
         try:
             print('添加人员')
             print('输入0返回上级菜单')
             while True:
-                personType=self.inputWithBack(input("请输入人员类型或序号(1.老师/2.实验员/3.行政人员/4.老师兼行政人员)："))
-                if self.isEmpty(personType):          #判空
-                    continue
-                personClass=PERSON_TYPE.get(personType)
-                if not personClass:
-                    print('无效的人员类型，请重新输入')
-                    continue
-                while True:
-                    id=self.inputWithBack(input("请输入编号："))
-                    if self.isEmpty(id):              #判空
-                        continue
-                    if not id.isascii() or not id.isalnum():  #编号只能英文和数字
-                        print('编号只能包含字母和数字，请重新输入')
-                        continue
-                    if self.service.personIDCheck(id):  #编号不能重复
-                        print('编号已存在，请重新输入')
-                        continue
-                    break
-                while True:
-                    name=self.inputWithBack(input("请输入姓名："))
-                    if self.isEmpty(name):            #判空
-                        continue
-                    break
-                while True:
-                    gender=self.inputWithBack(input("请输入性别："))
-                    if self.isEmpty(gender):          #判空
-                        continue
-                    if gender not in ('男','女'):       #性别只能男或女
-                        print('性别只能是男或女，请重新输入')
-                        continue
-                    break
-                while True:
-                    age=self.inputWithBack(input("请输入年龄："))
-                    if self.isEmpty(age):             #判空
-                        continue
-                    if not age.isdigit():               #年龄只能数字
-                        print('年龄只能是数字，请重新输入')
-                        continue
-                    break
-                data={"personID":id,"personName":name,"personGender":gender,"personAge":age}
-                for field,prompt in PERSON_FIELDS[personClass]:
-                    while True:
-                        value=self.inputWithBack(input(f"请输入{prompt}："))
-                        if self.isEmpty(value):       #判空
-                            continue
-                        data[field]=value
-                        break
+                personClass=self.selectType()
+                data=self.collectBaseInfo()
+                data.update(self.collectExtraFields(personClass))
                 self.service.addPerson(personClass(**data))
                 self.service.save()
                 self.clearScreen()
@@ -152,7 +176,7 @@ class CmdUI:
                 choice=input('按enter继续添加人员：')
                 if choice=='0':
                     return
-        except BackToMenu:                  #0异常返回上级菜单
+        except BackToMenu:
             return
         except KeyboardInterrupt:
             self.service.save()

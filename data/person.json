@@ -5,6 +5,7 @@
         "personName": "张三",
         "personGender": "男",
         "personAge": "35",
+        "department": "",
         "major": "计算机系",
         "professionalTitle": "副教授"
     },
@@ -34,6 +35,7 @@
         "personAge": "14",
         "politicalAppearance": "12",
         "professionalTitle": "12",
+        "department": "",
         "major": "12"
     },
     {
@@ -44,6 +46,7 @@
         "personAge": "19",
         "politicalAppearance": "12",
         "professionalTitle": "12",
+        "department": "",
         "major": "12"
     },
     {
@@ -52,6 +55,7 @@
         "personName": "1",
         "personGender": "男",
         "personAge": "1",
+        "department": "",
         "major": "1",
         "professionalTitle": "1"
     },
@@ -63,5 +67,44 @@
         "personAge": "2",
         "laboratory": "2",
         "duties": "2"
+    },
+    {
+        "__class__": "teacher",
+        "personID": "00002",
+        "personName": "发",
+        "personGender": "男",
+        "personAge": "1",
+        "department": "",
+        "major": "1",
+        "professionalTitle": "1"
+    },
+    {
+        "__class__": "teacher",
+        "personID": "222",
+        "personName": "2",
+        "personGender": "女",
+        "personAge": "2",
+        "department": "物理",
+        "major": "major",
+        "professionalTitle": "老师"
+    },
+    {
+        "__class__": "experimenter",
+        "personID": "0000",
+        "personName": "222",
+        "personGender": "男",
+        "personAge": "12",
+        "laboratory": "1",
+        "duties": "1"
+    },
+    {
+        "__class__": "teacher",
+        "personID": "0000000",
+        "personName": "1",
+        "personGender": "男",
+        "personAge": 1,
+        "department": "1",
+        "major": "1",
+        "professionalTitle": "1"
     }
 ]
