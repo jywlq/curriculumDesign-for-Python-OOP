@@ -204,7 +204,7 @@ class CmdUI:
                 if func:
                     func()
                 else:
-                    print('无效的操作编号，请重新输入')
+                    self.showMessage('无效的操作编号')
         except KeyboardInterrupt:
             self.save()
             print('\n已保存，退出系统')
@@ -249,6 +249,8 @@ class CmdUI:
                     pf.updateName(keyword)
                 elif choice=='3':
                     pf.reset()
+                else:
+                    self.showMessage('无效的操作编号')
         except KeyboardInterrupt:
             return
         except BackToMenu:
@@ -293,19 +295,63 @@ class CmdUI:
             return
 
     def deletePerson(self):
+        '''
+        删除人员：复用筛选逻辑，用户筛选后输入序号删除
+        '''
         try:
-            self.clearScreen()
-            print('=========删除人员=========')
-            print('输入0返回上级菜单')
-            personID=self.inputWithBack(input('请输入要删除的编号：'))
-            if self.service.deletePerson(personID):
-                self.dataChange()
-                print('删除成功')
-            else:
-                print('未找到该编号对应的人员')
-        except BackToMenu:
-            return
+            pf=PersonFilter(self.service)
+            while True:
+                self.clearScreen()
+                print('=========删除人员=========')
+
+                currentList=pf.getResult()
+
+                print(f'共 {len(currentList)} 条记录\n')
+                for i,p in enumerate(currentList,1):
+                    print(f'{i}. {p}')
+
+                if not currentList:
+                    print('暂无符合条件的人员记录')
+
+                print()
+                if pf.filterID:
+                    print(f'1. 按编号筛选 --> {pf.filterID}')
+                else:
+                    print('1. 按编号筛选')
+                if pf.filterName:
+                    print(f'2. 按姓名筛选 --> {pf.filterName}')
+                else:
+                    print('2. 按姓名筛选')
+                print('3. 重置（清除所有筛选）')
+                print('0. 返回上级菜单')
+
+                choice=self.inputWithBack(input('\n请选择操作或直接按enter删除：'))
+                if choice=='1':
+                    keyword=self.inputWithBack(input('请输入编号前缀：'))
+                    pf.updateID(keyword)
+                elif choice=='2':
+                    keyword=self.inputWithBack(input('请输入姓名前缀：'))
+                    pf.updateName(keyword)
+                elif choice=='3':
+                    pf.reset()
+                else:
+                    if not choice.strip():
+                        idx=self.inputWithBack(input('请输入要删除的序号：'))
+                        if not idx.strip():
+                            self.showMessage('序号无效')
+                            continue
+                        try:
+                            self.deleteByIndex(int(idx)-1, currentList)
+                        except ValueError:
+                            self.showMessage('序号无效')
+                    else:
+                        try:
+                            self.deleteByIndex(int(choice)-1, currentList)
+                        except ValueError:
+                            self.showMessage('序号无效')
         except KeyboardInterrupt:
+            return
+        except BackToMenu:
             return
 
     def getPersonStatistics(self):
@@ -339,6 +385,25 @@ class CmdUI:
             print('输入不能为空')
             return True
         return False
+
+    def showMessage(self, msg):
+        '''清屏 → 显示提示 → 按enter继续'''
+        self.clearScreen()
+        print(msg)
+        input('按enter继续')
+
+    def deleteByIndex(self, index, currentList):
+        '''根据序号删除人员'''
+        if 0<=index<len(currentList):
+            personID=currentList[index]._personID
+            self.clearScreen()
+            if self.service.deletePerson(personID):
+                self.dataChange()
+                self.showMessage('删除成功')
+            else:
+                self.showMessage('删除失败')
+        else:
+            self.showMessage('序号无效')
 
 
 
@@ -374,10 +439,7 @@ class CmdUI:
                 self.dataChange()
                 self.clearScreen()
                 print('添加成功\n')
-                print('0.返回上级菜单')
-                choice=input('按enter继续添加人员：')
-                if choice=='0':
-                    return
+                self.inputWithBack(input('按enter继续添加人员，输入0返回：'))
         except BackToMenu:
             return
         except KeyboardInterrupt:

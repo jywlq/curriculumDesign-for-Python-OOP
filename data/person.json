@@ -306,26 +306,5 @@
         "department": "计算机系",
         "major": "数据科学",
         "professionalTitle": "助教"
-    },
-    {
-        "__class__": "teacher_admin",
-        "personID": "TA005",
-        "personName": "董健",
-        "personGender": "男",
-        "personAge": "44",
-        "politicalAffiliation": "党员",
-        "professionalTitle": "副教授",
-        "department": "物理系",
-        "major": "应用物理"
-    },
-    {
-        "__class__": "teacher",
-        "personID": "test",
-        "personName": "test",
-        "personGender": "男",
-        "personAge": 100,
-        "department": "test",
-        "major": "test",
-        "professionalTitle": "test"
     }
 ]
