@@ -5,106 +5,327 @@
         "personName": "张三",
         "personGender": "男",
         "personAge": "35",
-        "department": "",
-        "major": "计算机系",
+        "department": "计算机系",
+        "major": "软件工程",
         "professionalTitle": "副教授"
+    },
+    {
+        "__class__": "teacher",
+        "personID": "T002",
+        "personName": "李华",
+        "personGender": "女",
+        "personAge": "28",
+        "department": "计算机系",
+        "major": "人工智能",
+        "professionalTitle": "讲师"
+    },
+    {
+        "__class__": "teacher",
+        "personID": "T003",
+        "personName": "王强",
+        "personGender": "男",
+        "personAge": "42",
+        "department": "数学系",
+        "major": "应用数学",
+        "professionalTitle": "教授"
+    },
+    {
+        "__class__": "teacher",
+        "personID": "T004",
+        "personName": "刘芳",
+        "personGender": "女",
+        "personAge": "31",
+        "department": "外语系",
+        "major": "英语",
+        "professionalTitle": "讲师"
+    },
+    {
+        "__class__": "teacher",
+        "personID": "T005",
+        "personName": "陈明",
+        "personGender": "男",
+        "personAge": "45",
+        "department": "物理系",
+        "major": "理论物理",
+        "professionalTitle": "教授"
     },
     {
         "__class__": "experimenter",
         "personID": "E001",
-        "personName": "孙八",
+        "personName": "赵丽",
+        "personGender": "女",
+        "personAge": "26",
+        "laboratory": "计算机实验室",
+        "duties": "实验员"
+    },
+    {
+        "__class__": "experimenter",
+        "personID": "E002",
+        "personName": "孙伟",
         "personGender": "男",
-        "personAge": "32",
+        "personAge": "33",
+        "laboratory": "物理实验室",
+        "duties": "高级实验员"
+    },
+    {
+        "__class__": "experimenter",
+        "personID": "E003",
+        "personName": "周娜",
+        "personGender": "女",
+        "personAge": "29",
         "laboratory": "化学实验室",
         "duties": "实验员"
     },
     {
         "__class__": "experimenter",
-        "personID": "001",
-        "personName": "测试1",
+        "personID": "E004",
+        "personName": "吴刚",
         "personGender": "男",
-        "personAge": "18",
-        "laboratory": "计算机",
+        "personAge": "38",
+        "laboratory": "生物实验室",
+        "duties": "实验室主任"
+    },
+    {
+        "__class__": "experimenter",
+        "personID": "E005",
+        "personName": "郑婷",
+        "personGender": "女",
+        "personAge": "27",
+        "laboratory": "计算机实验室",
+        "duties": "实验助理"
+    },
+    {
+        "__class__": "admin",
+        "personID": "A001",
+        "personName": "黄磊",
+        "personGender": "男",
+        "personAge": "40",
+        "politicalAffiliation": "党员",
+        "professionalTitle": "高级政工师"
+    },
+    {
+        "__class__": "admin",
+        "personID": "A002",
+        "personName": "林静",
+        "personGender": "女",
+        "personAge": "35",
+        "politicalAffiliation": "党员",
+        "professionalTitle": "政工师"
+    },
+    {
+        "__class__": "admin",
+        "personID": "A003",
+        "personName": "何军",
+        "personGender": "男",
+        "personAge": "50",
+        "politicalAffiliation": "群众",
+        "professionalTitle": "助理政工师"
+    },
+    {
+        "__class__": "admin",
+        "personID": "A004",
+        "personName": "罗敏",
+        "personGender": "女",
+        "personAge": "32",
+        "politicalAffiliation": "党员",
+        "professionalTitle": "政工师"
+    },
+    {
+        "__class__": "admin",
+        "personID": "A005",
+        "personName": "谢峰",
+        "personGender": "男",
+        "personAge": "45",
+        "politicalAffiliation": "群众",
+        "professionalTitle": "高级政工师"
+    },
+    {
+        "__class__": "teacher_admin",
+        "personID": "TA001",
+        "personName": "朱伟",
+        "personGender": "男",
+        "personAge": "48",
+        "politicalAffiliation": "党员",
+        "professionalTitle": "教授",
+        "department": "计算机系",
+        "major": "计算机科学"
+    },
+    {
+        "__class__": "teacher_admin",
+        "personID": "TA002",
+        "personName": "胡娟",
+        "personGender": "女",
+        "personAge": "39",
+        "politicalAffiliation": "党员",
+        "professionalTitle": "副教授",
+        "department": "外语系",
+        "major": "日语"
+    },
+    {
+        "__class__": "teacher_admin",
+        "personID": "TA003",
+        "personName": "郭涛",
+        "personGender": "男",
+        "personAge": "52",
+        "politicalAffiliation": "党员",
+        "professionalTitle": "教授",
+        "department": "数学系",
+        "major": "统计学"
+    },
+    {
+        "__class__": "teacher",
+        "personID": "T006",
+        "personName": "马超",
+        "personGender": "男",
+        "personAge": "30",
+        "department": "体育系",
+        "major": "体育教育",
+        "professionalTitle": "讲师"
+    },
+    {
+        "__class__": "teacher",
+        "personID": "T007",
+        "personName": "高雅",
+        "personGender": "女",
+        "personAge": "27",
+        "department": "艺术系",
+        "major": "音乐",
+        "professionalTitle": "助教"
+    },
+    {
+        "__class__": "experimenter",
+        "personID": "E006",
+        "personName": "韩冰",
+        "personGender": "男",
+        "personAge": "34",
+        "laboratory": "电子实验室",
         "duties": "实验员"
     },
     {
-        "__class__": "teacher_admin",
-        "personID": "002",
-        "personName": "里",
-        "personGender": "男",
-        "personAge": "14",
-        "politicalAppearance": "12",
-        "professionalTitle": "12",
-        "department": "",
-        "major": "12"
-    },
-    {
-        "__class__": "teacher_admin",
-        "personID": "005",
-        "personName": "里",
-        "personGender": "男",
-        "personAge": "19",
-        "politicalAppearance": "12",
-        "professionalTitle": "12",
-        "department": "",
-        "major": "12"
-    },
-    {
-        "__class__": "teacher",
-        "personID": "1",
-        "personName": "1",
-        "personGender": "男",
-        "personAge": "1",
-        "department": "",
-        "major": "1",
-        "professionalTitle": "1"
-    },
-    {
         "__class__": "experimenter",
-        "personID": "2",
-        "personName": "2",
-        "personGender": "男",
-        "personAge": "2",
-        "laboratory": "2",
-        "duties": "2"
-    },
-    {
-        "__class__": "teacher",
-        "personID": "00002",
-        "personName": "发",
-        "personGender": "男",
-        "personAge": "1",
-        "department": "",
-        "major": "1",
-        "professionalTitle": "1"
-    },
-    {
-        "__class__": "teacher",
-        "personID": "222",
-        "personName": "2",
+        "personID": "E007",
+        "personName": "冯雪",
         "personGender": "女",
-        "personAge": "2",
-        "department": "物理",
-        "major": "major",
-        "professionalTitle": "老师"
+        "personAge": "25",
+        "laboratory": "计算机实验室",
+        "duties": "实习实验员"
     },
     {
-        "__class__": "experimenter",
-        "personID": "0000",
-        "personName": "222",
+        "__class__": "admin",
+        "personID": "A006",
+        "personName": "蒋平",
         "personGender": "男",
-        "personAge": "12",
-        "laboratory": "1",
-        "duties": "1"
+        "personAge": "47",
+        "politicalAffiliation": "党员",
+        "professionalTitle": "高级政工师"
     },
     {
         "__class__": "teacher",
-        "personID": "0000000",
-        "personName": "1",
+        "personID": "T008",
+        "personName": "沈月",
+        "personGender": "女",
+        "personAge": "33",
+        "department": "经济系",
+        "major": "会计学",
+        "professionalTitle": "讲师"
+    },
+    {
+        "__class__": "teacher",
+        "personID": "T009",
+        "personName": "韩梅",
+        "personGender": "女",
+        "personAge": "29",
+        "department": "外语系",
+        "major": "日语",
+        "professionalTitle": "助教"
+    },
+    {
+        "__class__": "teacher",
+        "personID": "T010",
+        "personName": "杨帆",
         "personGender": "男",
-        "personAge": 1,
-        "department": "1",
-        "major": "1",
-        "professionalTitle": "1"
+        "personAge": "41",
+        "department": "物理系",
+        "major": "光学",
+        "professionalTitle": "副教授"
+    },
+    {
+        "__class__": "teacher_admin",
+        "personID": "TA004",
+        "personName": "许晴",
+        "personGender": "女",
+        "personAge": "36",
+        "politicalAffiliation": "群众",
+        "professionalTitle": "副教授",
+        "department": "经济系",
+        "major": "金融学"
+    },
+    {
+        "__class__": "experimenter",
+        "personID": "E008",
+        "personName": "邓超",
+        "personGender": "男",
+        "personAge": "31",
+        "laboratory": "物理实验室",
+        "duties": "实验员"
+    },
+    {
+        "__class__": "admin",
+        "personID": "A007",
+        "personName": "曹磊",
+        "personGender": "男",
+        "personAge": "55",
+        "politicalAffiliation": "党员",
+        "professionalTitle": "高级政工师"
+    },
+    {
+        "__class__": "teacher",
+        "personID": "T011",
+        "personName": "彭丽",
+        "personGender": "女",
+        "personAge": "28",
+        "department": "艺术系",
+        "major": "美术",
+        "professionalTitle": "助教"
+    },
+    {
+        "__class__": "experimenter",
+        "personID": "E009",
+        "personName": "萧然",
+        "personGender": "男",
+        "personAge": "37",
+        "laboratory": "化学实验室",
+        "duties": "实验室副主任"
+    },
+    {
+        "__class__": "teacher",
+        "personID": "T012",
+        "personName": "田甜",
+        "personGender": "女",
+        "personAge": "26",
+        "department": "计算机系",
+        "major": "数据科学",
+        "professionalTitle": "助教"
+    },
+    {
+        "__class__": "teacher_admin",
+        "personID": "TA005",
+        "personName": "董健",
+        "personGender": "男",
+        "personAge": "44",
+        "politicalAffiliation": "党员",
+        "professionalTitle": "副教授",
+        "department": "物理系",
+        "major": "应用物理"
+    },
+    {
+        "__class__": "teacher",
+        "personID": "test",
+        "personName": "test",
+        "personGender": "男",
+        "personAge": 100,
+        "department": "test",
+        "major": "test",
+        "professionalTitle": "test"
     }
 ]
