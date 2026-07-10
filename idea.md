@@ -5,7 +5,7 @@
 - 给这些方法加 list 参数，默认为 self.personList，支持传入筛选后的列表
 
 ## findPerson 修复
-- 无参调用时返回 self.personList.copy() 而不是内部引用
+- 无参调用时返回 self.personList.copy() 而不是内部引用（已完成）
 
 ## 回收站
 

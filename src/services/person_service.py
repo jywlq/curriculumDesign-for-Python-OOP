@@ -34,7 +34,7 @@ class personService:
         for p in self.personList:
             if p._personID.startswith(personID) and p._personName.startswith(personName):
                 result.append(p)
-        return result
+        return result.copy()
 
     def updatePerson(self,personID:str,person):
         '''
