@@ -1,7 +1,7 @@
-from src.models.base import baseClass
-from src.models.teacher import teacher
-from src.models.experimenter import experimenter
-from src.models.admin import admin
-from src.models.teacher_admin import teacher_admin
+from src.models.base import BaseClass
+from src.models.teacher import Teacher
+from src.models.experimenter import Experimenter
+from src.models.admin import Admin
+from src.models.teacher_admin import TeacherAdmin
 
-__all__ = ['baseClass', 'teacher', 'experimenter', 'admin', 'teacher_admin']
+__all__ = ['BaseClass', 'Teacher', 'Experimenter', 'Admin', 'TeacherAdmin']

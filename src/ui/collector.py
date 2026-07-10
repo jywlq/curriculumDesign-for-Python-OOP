@@ -1,49 +1,50 @@
 # 人员信息收集器类
-from src.models import teacher,experimenter,admin,teacher_admin
+from src.models import Teacher, Experimenter, Admin, TeacherAdmin
 from src.ui.exceptions import ReturnBack
+
 
 class PersonCollector:
     '''
     人员信息收集器类：封装人员信息的输入收集逻辑
     '''
-    PERSON_TYPE={
-        "1":teacher,
-        "2":experimenter,
-        "3":admin,
-        "4":teacher_admin,
-        "老师":teacher,
-        "实验员":experimenter,
-        "行政人员":admin,
-        "老师兼行政人员":teacher_admin
+    PERSON_TYPE = {
+        "1": Teacher,
+        "2": Experimenter,
+        "3": Admin,
+        "4": TeacherAdmin,
+        "老师": Teacher,
+        "实验员": Experimenter,
+        "行政人员": Admin,
+        "老师兼行政人员": TeacherAdmin
     }
 
     def __init__(self, service):
-        self.service=service
+        self.service = service
 
-    def selectType(self):
+    def select_type(self):
         '''
         选择人员类型，返回类对象
         '''
         while True:
-            personType=input("请输入人员类型或序号(1.老师/2.实验员/3.行政人员/4.老师兼行政人员)：")
-            if personType=='0':
+            person_type = input("请输入人员类型或序号(1.老师/2.实验员/3.行政人员/4.老师兼行政人员)：")
+            if person_type == '0':
                 raise ReturnBack()
-            if not personType.strip():
+            if not person_type.strip():
                 print('输入不能为空')
                 continue
-            personClass=self.PERSON_TYPE.get(personType)
-            if not personClass:
+            person_class = self.PERSON_TYPE.get(person_type)
+            if not person_class:
                 print('无效的人员类型，请重新输入')
                 continue
-            return personClass
+            return person_class
 
-    def collectBaseInfo(self, oldID:str=''):
+    def collect_base_info(self, old_id: str = ''):
         '''
-        收集baseClass的四个字段，返回字典
+        收集BaseClass的四个字段，返回字典
         '''
         while True:
-            id=input("请输入编号：")
-            if id=='0':
+            id = input("请输入编号：")
+            if id == '0':
                 raise ReturnBack()
             if not id.strip():
                 print('输入不能为空')
@@ -51,68 +52,68 @@ class PersonCollector:
             if not id.isascii() or not id.isalnum():
                 print('编号只能包含字母和数字，请重新输入')
                 continue
-            if id!=oldID and self.service.personIDCheck(id):
+            if id != old_id and self.service.person_id_check(id):
                 print('编号已存在，请重新输入')
                 continue
             break
         while True:
-            name=input("请输入姓名：")
-            if name=='0':
+            name = input("请输入姓名：")
+            if name == '0':
                 raise ReturnBack()
             if not name.strip():
                 print('输入不能为空')
                 continue
             break
         while True:
-            gender=input("请输入性别：")
-            if gender=='0':
+            gender = input("请输入性别：")
+            if gender == '0':
                 raise ReturnBack()
             if not gender.strip():
                 print('输入不能为空')
                 continue
-            if gender not in ('男','女'):
+            if gender not in ('男', '女'):
                 print('性别只能是男或女，请重新输入')
                 continue
             break
         while True:
-            ageStr=input("请输入年龄：")
-            if ageStr=='0':
+            age_str = input("请输入年龄：")
+            if age_str == '0':
                 raise ReturnBack()
-            if not ageStr.strip():
+            if not age_str.strip():
                 print('输入不能为空')
                 continue
             try:
-                age = int(ageStr)
+                age = int(age_str)
                 if 1 <= age <= 150:
                     break
                 else:
                     print("年龄必须在1到150之间")
             except ValueError:
                 print("年龄必须是一个整数")
-        return {"personID":id,"personName":name,"personGender":gender,"personAge":age}
+        return {"personID": id, "personName": name, "personGender": gender, "personAge": age}
 
-    def collectExtraFields(self, personClass):
+    def collect_extra_fields(self, person_class):
         '''
-        收集类特有字段，调用getFields()获取字段列表，返回字典
+        收集类特有字段，调用get_fields()获取字段列表，返回字典
         '''
-        data={}
-        for field,prompt in personClass.getFields():
+        data = {}
+        for field, prompt in person_class.get_fields():
             while True:
-                value=input(f"请输入{prompt}：")
-                if value=='0':
+                value = input(f"请输入{prompt}：")
+                if value == '0':
                     raise ReturnBack()
                 if not value.strip():
                     print('输入不能为空')
                     continue
-                data[field]=value
+                data[field] = value
                 break
         return data
 
-    def collect(self, oldID:str=''):
+    def collect(self, old_id: str = ''):
         '''
         收集完整人员信息，返回(类型类, 数据字典)
         '''
-        personClass=self.selectType()
-        data=self.collectBaseInfo(oldID)
-        data.update(self.collectExtraFields(personClass))
-        return personClass, data
+        person_class = self.select_type()
+        data = self.collect_base_info(old_id)
+        data.update(self.collect_extra_fields(person_class))
+        return person_class, data

@@ -1,3 +1,3 @@
-from src.services.person_service import personService
+from src.services.person_service import PersonService
 
-__all__ = ['personService']
+__all__ = ['PersonService']
