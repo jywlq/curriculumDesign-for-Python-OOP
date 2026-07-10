@@ -270,7 +270,12 @@ class CmdUI:
             self.clearScreen()
             print('=========修改人员=========')
             print('输入0返回上级菜单')
-            personID=self.inputWithBack(input('请输入要修改的编号：'))
+            while True:
+                personID=self.inputWithBack(input('请输入要修改的编号：'))
+                if not personID.strip():
+                    print('输入不能为空')
+                    continue
+                break
             personList=self.service.findPerson(personID)
             if not personList:
                 print('未找到该编号对应的人员')
