@@ -217,44 +217,15 @@ class CmdUI:
                 else:
                     self.showMessage('无效的操作编号')
         except (KeyboardInterrupt,ReturnBack):
-            if self.autoSaveOn:
-                self.save()
-                print('\n已保存，退出系统')
-            else:
-                print('\n退出系统')
+            self.save()
+            print('\n已保存，退出系统')
+            
             
     def findPerson(self):
         '''
-        列表筛选：初始显示全部，支持累积筛选（可组合编号和姓名条件）
+        列表筛选：初始显示全部，支持累积筛选
         '''
-        try:
-            pf=PersonFilter(self.service)
-            while True:
-                self.clearScreen()
-                print('========= 人员查询 =========')
-                currentList=pf.getResult()
-                print(f'共 {len(currentList)} 条记录\n')
-                for i,p in enumerate(currentList,1):
-                    print(f'{i}. {p}')
-                if not currentList:
-                    print('暂无符合条件的人员记录')
-                self.showFilterMenu(pf)
-                print('输入0返回上级菜单')
-                choice=self.inputWithBack(input('\n请选择操作：'))
-                if choice=='1':
-                    keyword=self.inputWithBack(input('请输入编号前缀：'))
-                    pf.updateID(keyword)
-                elif choice=='2':
-                    keyword=self.inputWithBack(input('请输入姓名前缀：'))
-                    pf.updateName(keyword)
-                elif choice=='3':
-                    pf.reset()
-                else:
-                    self.showMessage('无效的操作编号')
-        except KeyboardInterrupt:
-            return
-        except ReturnBack:
-            return
+        self._filterList('人员查询')
         
     def showAllPerson(self):
         try:
@@ -271,77 +242,20 @@ class CmdUI:
         '''
         修改人员：复用筛选逻辑，用户筛选后输入序号修改
         '''
-        try:
-            pf=PersonFilter(self.service)
-            while True:
-                self.clearScreen()
-                print('=========修改人员=========')
-                currentList=pf.getResult()
-                print(f'共 {len(currentList)} 条记录\n')
-                for i,p in enumerate(currentList,1):
-                    print(f'{i}. {p}')
-                if not currentList:
-                    print('暂无符合条件的人员记录')
-                self.showFilterMenu(pf)
-                print("4. 输入序号修改对应人员")
-                print("输入0返回上级菜单")
-                choice=self.inputWithBack(input('\n请选择操作'))
-                if choice=='1':
-                    keyword=self.inputWithBack(input('请输入编号前缀：'))
-                    pf.updateID(keyword)
-                elif choice=='2':
-                    keyword=self.inputWithBack(input('请输入姓名前缀：'))
-                    pf.updateName(keyword)
-                elif choice=='3':
-                    pf.reset()
-                elif choice=='4':
-                    idx=self.inputWithBack(input('请输入要修改的序号：'))
-                    try:
-                        self.updateByIndex(int(idx)-1, currentList)
-                    except ValueError:
-                        self.showMessage('序号无效')
-                else:
-                    self.showMessage('无效的操作编号')
-        except (KeyboardInterrupt, ReturnBack):
-            return
+        person=self._filterList('修改人员', '修改')
+        if person:
+            self.updateByIndex(person)
 
     def deletePerson(self):
         '''
         删除人员：复用筛选逻辑，用户筛选后输入序号删除
         '''
-        try:
-            pf=PersonFilter(self.service)
-            while True:
-                self.clearScreen()
-                print('=========删除人员=========')
-                currentList=pf.getResult()
-                print(f'共 {len(currentList)} 条记录\n')
-                for i,p in enumerate(currentList,1):
-                    print(f'{i}. {p}')
-                if not currentList:
-                    print('暂无符合条件的人员记录')
-                self.showFilterMenu(pf)
-                print("4. 输入序号删除对应人员")
-                print("输入0返回上级菜单")
-                choice=self.inputWithBack(input('\n请选择操作'))
-                if choice=='1':
-                    keyword=self.inputWithBack(input('请输入编号前缀：'))
-                    pf.updateID(keyword)
-                elif choice=='2':
-                    keyword=self.inputWithBack(input('请输入姓名前缀：'))
-                    pf.updateName(keyword)
-                elif choice=='3':
-                    pf.reset()
-                elif choice=='4':
-                    idx=self.inputWithBack(input('请输入要删除的序号：'))
-                    try:
-                        self.deleteByIndex(int(idx)-1, currentList)
-                    except ValueError:
-                        self.showMessage('序号无效')
-                else:
-                    self.showMessage('无效的操作编号')
-        except (KeyboardInterrupt, ReturnBack):
-            return
+        pf=PersonFilter(self.service)
+        while True:
+            person=self._filterList('删除人员', '删除', pf)
+            if not person:
+                return
+            self.deleteByIndex(person)
 
     def getPersonStatistics(self):
         stat=self.service.getPersonStatistics()
@@ -395,25 +309,78 @@ class CmdUI:
             print('2. 按姓名筛选')
         print('3. 重置（清除所有筛选）')
 
-    def deleteByIndex(self, index, currentList):
-        '''根据序号删除人员'''
-        if index<0 or index>=len(currentList):
-            raise ValueError
-        personID=currentList[index]._personID
-        self.clearScreen()
-        if self.service.deletePerson(personID):
-            self.dataChange()
-            self.showMessage('删除成功')
-        else:
-            self.showMessage('序号无效')
+    def _filterList(self, title, actionName=None, pf=None):
+        '''
+        通用的筛选+选择人员流程
+        title: 页面标题
+        actionName: 操作名称，如"删除"/"修改"，None表示只查询
+        pf: PersonFilter对象，为None时创建新的
+        返回: 选中的人员对象，或 None（用户返回或只查询）
+        '''
+        try:
+            if pf is None:
+                pf=PersonFilter(self.service)
+            while True:
+                self.clearScreen()
+                print(f'========={title}=========')
+                currentList=pf.getResult()
+                print(f'共 {len(currentList)} 条记录\n')
+                for i,p in enumerate(currentList,1):
+                    print(f'{i}. {p}')
+                if not currentList:
+                    print('暂无符合条件的人员记录')
+                self.showFilterMenu(pf)
+                if actionName:
+                    print(f"4. 输入序号{actionName}对应人员")
+                print("输入0返回上级菜单")
+                choice=self.inputWithBack(input('\n请选择操作：'))
+                if choice=='1':
+                    keyword=self.inputWithBack(input('请输入编号前缀：'))
+                    pf.updateID(keyword)
+                elif choice=='2':
+                    keyword=self.inputWithBack(input('请输入姓名前缀：'))
+                    pf.updateName(keyword)
+                elif choice=='3':
+                    pf.reset()
+                elif choice=='4' and actionName:
+                    idx=self.inputWithBack(input(f'请输入要{actionName}的序号：'))
+                    try:
+                        index=int(idx)-1
+                        if index<0 or index>=len(currentList):
+                            raise ValueError
+                        return currentList[index]
+                    except ValueError:
+                        self.showMessage('序号无效')
+                else:
+                    if actionName:
+                        self.showMessage('无效的操作编号')
+        except (KeyboardInterrupt, ReturnBack):
+            return None
 
-    def updateByIndex(self, index, currentList):
-        '''根据序号修改人员'''
-        if index<0 or index>=len(currentList):
-            raise ValueError
-        oldPerson=currentList[index]
-        personClass, data=self.collector.collect(oldPerson._personID)
-        if self.service.updatePerson(oldPerson._personID, personClass(**data)):
+    def deleteByIndex(self, person):
+        '''删除人员，返回是否成功'''
+        while True:
+            confirm=self.inputWithBack(input(f'确认删除 {person._personName}({person._personID})？(y/n)：'))
+            if confirm.lower()=='y':
+                if self.service.deletePerson(person._personID):
+                    self.dataChange()
+                    self.showMessage('删除成功')
+                    return True
+                else:
+                    self.showMessage('删除失败')
+                    return False
+            elif confirm.lower()=='n':
+                return False
+            else:
+                print('请输入y或n')
+
+    def updateByIndex(self, person):
+        '''修改人员'''
+        try:
+            personClass, data=self.collector.collect(person._personID)
+        except (ReturnBack, KeyboardInterrupt):
+            return
+        if self.service.updatePerson(person._personID, personClass(**data)):
             self.dataChange()
             self.showMessage('修改成功')
         else:

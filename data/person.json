@@ -296,26 +296,5 @@
         "personAge": "37",
         "laboratory": "化学实验室",
         "duties": "实验室副主任"
-    },
-    {
-        "__class__": "teacher",
-        "personID": "T012",
-        "personName": "田甜",
-        "personGender": "女",
-        "personAge": "26",
-        "department": "计算机系",
-        "major": "数据科学",
-        "professionalTitle": "助教"
-    },
-    {
-        "__class__": "teacher_admin",
-        "personID": "T000",
-        "personName": "t",
-        "personGender": "男",
-        "personAge": 111,
-        "politicalAffiliation": "1",
-        "professionalTitle": "1",
-        "department": "1",
-        "major": "1"
     }
 ]
