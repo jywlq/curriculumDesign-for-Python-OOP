@@ -306,5 +306,16 @@
         "department": "计算机系",
         "major": "数据科学",
         "professionalTitle": "助教"
+    },
+    {
+        "__class__": "teacher_admin",
+        "personID": "T000",
+        "personName": "t",
+        "personGender": "男",
+        "personAge": 111,
+        "politicalAffiliation": "1",
+        "professionalTitle": "1",
+        "department": "1",
+        "major": "1"
     }
 ]

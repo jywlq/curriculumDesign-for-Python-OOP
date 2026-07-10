@@ -268,30 +268,41 @@ class CmdUI:
             
         
     def updatePerson(self):
+        '''
+        修改人员：复用筛选逻辑，用户筛选后输入序号修改
+        '''
         try:
-            self.clearScreen()
-            print('=========修改人员=========')
-            print('输入0返回上级菜单')
+            pf=PersonFilter(self.service)
             while True:
-                personID=self.inputWithBack(input('请输入要修改的编号：'))
-                if not personID.strip():
-                    print('输入不能为空')
-                    continue
-                break
-            personList=self.service.findPerson(personID)
-            if not personList:
-                print('未找到该编号对应的人员')
-                return
-            oldPerson=personList[0]
-            personClass, data=self.collector.collect(oldPerson._personID)
-            if self.service.updatePerson(personID,personClass(**data)):
-                self.dataChange()
-                print('修改成功')
-            else:
-                print('修改失败')
-        except ReturnBack:
-            return
-        except KeyboardInterrupt:
+                self.clearScreen()
+                print('=========修改人员=========')
+                currentList=pf.getResult()
+                print(f'共 {len(currentList)} 条记录\n')
+                for i,p in enumerate(currentList,1):
+                    print(f'{i}. {p}')
+                if not currentList:
+                    print('暂无符合条件的人员记录')
+                self.showFilterMenu(pf)
+                print("4. 输入序号修改对应人员")
+                print("输入0返回上级菜单")
+                choice=self.inputWithBack(input('\n请选择操作'))
+                if choice=='1':
+                    keyword=self.inputWithBack(input('请输入编号前缀：'))
+                    pf.updateID(keyword)
+                elif choice=='2':
+                    keyword=self.inputWithBack(input('请输入姓名前缀：'))
+                    pf.updateName(keyword)
+                elif choice=='3':
+                    pf.reset()
+                elif choice=='4':
+                    idx=self.inputWithBack(input('请输入要修改的序号：'))
+                    try:
+                        self.updateByIndex(int(idx)-1, currentList)
+                    except ValueError:
+                        self.showMessage('序号无效')
+                else:
+                    self.showMessage('无效的操作编号')
+        except (KeyboardInterrupt, ReturnBack):
             return
 
     def deletePerson(self):
@@ -395,6 +406,18 @@ class CmdUI:
             self.showMessage('删除成功')
         else:
             self.showMessage('序号无效')
+
+    def updateByIndex(self, index, currentList):
+        '''根据序号修改人员'''
+        if index<0 or index>=len(currentList):
+            raise ValueError
+        oldPerson=currentList[index]
+        personClass, data=self.collector.collect(oldPerson._personID)
+        if self.service.updatePerson(oldPerson._personID, personClass(**data)):
+            self.dataChange()
+            self.showMessage('修改成功')
+        else:
+            self.showMessage('修改失败')
 
 
 
