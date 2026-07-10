@@ -8,7 +8,7 @@ class BackToMenu(Exception):pass
 
 class PersonFilter:
     '''
-    人员筛选器类：管理筛选状态，封装筛选逻辑
+    人员筛选器类：管理筛选状态，返回筛选结果列表
     '''
     def __init__(self, service):
         self.service=service
@@ -29,21 +29,8 @@ class PersonFilter:
         self.filterName=''
 
     def getResult(self):
-        '''获取筛选结果，调用service的交集逻辑'''
+        '''获取筛选结果列表'''
         return self.service.findPerson(self.filterID, self.filterName)
-
-    def getMenuDisplay(self):
-        '''获取筛选菜单显示文本'''
-        lines=[]
-        if self.filterID:
-            lines.append(f'1. 按编号筛选 --> {self.filterID}')
-        else:
-            lines.append('1. 按编号筛选')
-        if self.filterName:
-            lines.append(f'2. 按姓名筛选 --> {self.filterName}')
-        else:
-            lines.append('2. 按姓名筛选')
-        return lines
 
 
 class PersonCollector:
@@ -242,8 +229,14 @@ class CmdUI:
                     print('暂无符合条件的人员记录')
 
                 print()
-                for line in pf.getMenuDisplay():
-                    print(line)
+                if pf.filterID:
+                    print(f'1. 按编号筛选 --> {pf.filterID}')
+                else:
+                    print('1. 按编号筛选')
+                if pf.filterName:
+                    print(f'2. 按姓名筛选 --> {pf.filterName}')
+                else:
+                    print('2. 按姓名筛选')
                 print('3. 重置（清除所有筛选）')
                 print('0. 返回上级菜单')
 
@@ -256,8 +249,6 @@ class CmdUI:
                     pf.updateName(keyword)
                 elif choice=='3':
                     pf.reset()
-                else:
-                    print('无效的操作编号，请重新输入')
         except KeyboardInterrupt:
             return
         except BackToMenu:
