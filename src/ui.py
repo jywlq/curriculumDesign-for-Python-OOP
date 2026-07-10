@@ -1,9 +1,10 @@
 # 命令行交互界面（菜单、输入输出）
 import os
+import json
 from src.models import teacher,experimenter,admin,teacher_admin
 from src.services import personService
 
-class BackToMenu(Exception):pass
+class ReturnBack(Exception):pass
 
 
 class PersonFilter:
@@ -58,7 +59,7 @@ class PersonCollector:
         while True:
             personType=input("请输入人员类型或序号(1.老师/2.实验员/3.行政人员/4.老师兼行政人员)：")
             if personType=='0':
-                raise BackToMenu()
+                raise ReturnBack()
             if not personType.strip():
                 print('输入不能为空')
                 continue
@@ -75,7 +76,7 @@ class PersonCollector:
         while True:
             id=input("请输入编号：")
             if id=='0':
-                raise BackToMenu()
+                raise ReturnBack()
             if not id.strip():
                 print('输入不能为空')
                 continue
@@ -89,7 +90,7 @@ class PersonCollector:
         while True:
             name=input("请输入姓名：")
             if name=='0':
-                raise BackToMenu()
+                raise ReturnBack()
             if not name.strip():
                 print('输入不能为空')
                 continue
@@ -97,7 +98,7 @@ class PersonCollector:
         while True:
             gender=input("请输入性别：")
             if gender=='0':
-                raise BackToMenu()
+                raise ReturnBack()
             if not gender.strip():
                 print('输入不能为空')
                 continue
@@ -108,7 +109,7 @@ class PersonCollector:
         while True:
             ageStr=input("请输入年龄：")
             if ageStr=='0':
-                raise BackToMenu()
+                raise ReturnBack()
             if not ageStr.strip():
                 print('输入不能为空')
                 continue
@@ -131,7 +132,7 @@ class PersonCollector:
             while True:
                 value=input(f"请输入{prompt}：")
                 if value=='0':
-                    raise BackToMenu()
+                    raise ReturnBack()
                 if not value.strip():
                     print('输入不能为空')
                     continue
@@ -150,10 +151,13 @@ class PersonCollector:
 
 
 class CmdUI:
+    CONFIG_FILE='data/config.json'
+
     def __init__(self):
         self.service=personService()
         self.collector=PersonCollector(self.service)
         self.autoSaveOn=False
+        self.loadConfig()
         '''
         菜单映射方法
         '''
@@ -166,17 +170,28 @@ class CmdUI:
             "6":self.getPersonStatistics,
             "7":self.autoSave,
             "8":self.save,
-            "9":self.load,
+            "9":self.loadData,
         }
     
     def save(self):
         self.service.save()
-        
-    def load(self):
+
+    def loadData(self):
         self.service.load()
-        '''
-        文件存/读，json格式，文件名为data.json
-        '''
+
+    def loadConfig(self):
+        '''加载配置文件'''
+        try:
+            with open(self.CONFIG_FILE,'r',encoding='utf-8') as f:
+                config=json.load(f)
+            self.autoSaveOn=config.get('autoSaveOn',False)
+        except (FileNotFoundError,json.JSONDecodeError):
+            pass
+
+    def saveConfig(self):
+        '''保存配置文件'''
+        with open(self.CONFIG_FILE,'w',encoding='utf-8') as f:
+            json.dump({'autoSaveOn':self.autoSaveOn},f,ensure_ascii=False,indent=4)
 
     def saveIfAuto(self):       #识别自动存储开关
         if self.autoSaveOn:
@@ -190,24 +205,23 @@ class CmdUI:
         '''
         主循环
         '''
-        self.load()
+        self.loadData()
         try:
             while True:
                 self.clearScreen()
                 self.showMenu()
-                choice=input('请输入操作编号：')
-                if choice=='0':
-                    self.save()
-                    print('已保存，退出系统')
-                    break
+                choice=self.inputWithBack(input('请输入操作编号：'))
                 func=self.MENU.get(choice)
                 if func:
                     func()
                 else:
                     self.showMessage('无效的操作编号')
-        except KeyboardInterrupt:
-            self.save()
-            print('\n已保存，退出系统')
+        except (KeyboardInterrupt,ReturnBack):
+            if self.autoSaveOn:
+                self.save()
+                print('\n已保存，退出系统')
+            else:
+                print('\n退出系统')
             
     def findPerson(self):
         '''
@@ -218,28 +232,14 @@ class CmdUI:
             while True:
                 self.clearScreen()
                 print('========= 人员查询 =========')
-
                 currentList=pf.getResult()
-
                 print(f'共 {len(currentList)} 条记录\n')
                 for i,p in enumerate(currentList,1):
                     print(f'{i}. {p}')
-
                 if not currentList:
                     print('暂无符合条件的人员记录')
-
-                print()
-                if pf.filterID:
-                    print(f'1. 按编号筛选 --> {pf.filterID}')
-                else:
-                    print('1. 按编号筛选')
-                if pf.filterName:
-                    print(f'2. 按姓名筛选 --> {pf.filterName}')
-                else:
-                    print('2. 按姓名筛选')
-                print('3. 重置（清除所有筛选）')
-                print('0. 返回上级菜单')
-
+                self.showFilterMenu(pf)
+                print('输入0返回上级菜单')
                 choice=self.inputWithBack(input('\n请选择操作：'))
                 if choice=='1':
                     keyword=self.inputWithBack(input('请输入编号前缀：'))
@@ -253,7 +253,7 @@ class CmdUI:
                     self.showMessage('无效的操作编号')
         except KeyboardInterrupt:
             return
-        except BackToMenu:
+        except ReturnBack:
             return
         
     def showAllPerson(self):
@@ -262,7 +262,7 @@ class CmdUI:
             print("=========所有人员列表如下=========")
             for p in self.service.personList:
                 print(p)
-            input("按enter返回上级菜单")
+            self.inputWithBack(input("按enter返回上级菜单"))
         except KeyboardInterrupt:
             return
             
@@ -289,7 +289,7 @@ class CmdUI:
                 print('修改成功')
             else:
                 print('修改失败')
-        except BackToMenu:
+        except ReturnBack:
             return
         except KeyboardInterrupt:
             return
@@ -303,29 +303,16 @@ class CmdUI:
             while True:
                 self.clearScreen()
                 print('=========删除人员=========')
-
                 currentList=pf.getResult()
-
                 print(f'共 {len(currentList)} 条记录\n')
                 for i,p in enumerate(currentList,1):
                     print(f'{i}. {p}')
-
                 if not currentList:
                     print('暂无符合条件的人员记录')
-
-                print()
-                if pf.filterID:
-                    print(f'1. 按编号筛选 --> {pf.filterID}')
-                else:
-                    print('1. 按编号筛选')
-                if pf.filterName:
-                    print(f'2. 按姓名筛选 --> {pf.filterName}')
-                else:
-                    print('2. 按姓名筛选')
-                print('3. 重置（清除所有筛选）')
-                print('0. 返回上级菜单')
-
-                choice=self.inputWithBack(input('\n请选择操作或直接按enter删除：'))
+                self.showFilterMenu(pf)
+                print("4. 输入序号删除对应人员")
+                print("输入0返回上级菜单")
+                choice=self.inputWithBack(input('\n请选择操作'))
                 if choice=='1':
                     keyword=self.inputWithBack(input('请输入编号前缀：'))
                     pf.updateID(keyword)
@@ -334,24 +321,15 @@ class CmdUI:
                     pf.updateName(keyword)
                 elif choice=='3':
                     pf.reset()
+                elif choice=='4':
+                    idx=self.inputWithBack(input('请输入要删除的序号：'))
+                    try:
+                        self.deleteByIndex(int(idx)-1, currentList)
+                    except ValueError:
+                        self.showMessage('序号无效')
                 else:
-                    if not choice.strip():
-                        idx=self.inputWithBack(input('请输入要删除的序号：'))
-                        if not idx.strip():
-                            self.showMessage('序号无效')
-                            continue
-                        try:
-                            self.deleteByIndex(int(idx)-1, currentList)
-                        except ValueError:
-                            self.showMessage('序号无效')
-                    else:
-                        try:
-                            self.deleteByIndex(int(choice)-1, currentList)
-                        except ValueError:
-                            self.showMessage('序号无效')
-        except KeyboardInterrupt:
-            return
-        except BackToMenu:
+                    self.showMessage('无效的操作编号')
+        except (KeyboardInterrupt, ReturnBack):
             return
 
     def getPersonStatistics(self):
@@ -360,21 +338,22 @@ class CmdUI:
         print('=========人员统计=========')
         for k,v in stat.items():
             print(f'{k}：{v}')
-        input('按enter返回上级菜单')
+        self.inputWithBack(input('按enter返回上级菜单'))
 
     def autoSave(self):
         self.autoSaveOn=not self.autoSaveOn
+        self.saveConfig()
         if self.autoSaveOn:
-            print('自动保存已开启')
+            self.showMessage('自动保存已开启')
         else:
-            print('自动保存已关闭')
+            self.showMessage('自动保存已关闭')
 
     def inputWithBack(self, value:str):
         '''
-        带返回功能的输入，0返回BackToMenu异常
+        带返回功能的输入，0返回ReturnBack异常
         '''
         if value=='0':
-            raise BackToMenu()
+            raise ReturnBack()
         return value
 
     def isEmpty(self, value:str):
@@ -390,18 +369,30 @@ class CmdUI:
         '''清屏 → 显示提示 → 按enter继续'''
         self.clearScreen()
         print(msg)
-        input('按enter继续')
+        self.inputWithBack(input('按enter继续'))
+
+    def showFilterMenu(self, pf):
+        '''显示筛选菜单'''
+        print()
+        if pf.filterID:
+            print(f'1. 按编号筛选 --> {pf.filterID}')
+        else:
+            print('1. 按编号筛选')
+        if pf.filterName:
+            print(f'2. 按姓名筛选 --> {pf.filterName}')
+        else:
+            print('2. 按姓名筛选')
+        print('3. 重置（清除所有筛选）')
 
     def deleteByIndex(self, index, currentList):
         '''根据序号删除人员'''
-        if 0<=index<len(currentList):
-            personID=currentList[index]._personID
-            self.clearScreen()
-            if self.service.deletePerson(personID):
-                self.dataChange()
-                self.showMessage('删除成功')
-            else:
-                self.showMessage('删除失败')
+        if index<0 or index>=len(currentList):
+            raise ValueError
+        personID=currentList[index]._personID
+        self.clearScreen()
+        if self.service.deletePerson(personID):
+            self.dataChange()
+            self.showMessage('删除成功')
         else:
             self.showMessage('序号无效')
 
@@ -424,7 +415,7 @@ class CmdUI:
         print('4. 修改人员')
         print('5. 删除人员')
         print('6. 统计人员')
-        print('7. 自动保存')
+        print('7. 自动保存',"(已开启)" if self.autoSaveOn else "(已关闭)")
         print('8. 手动保存')
         print('9. 读取数据')
         print('0. 退出系统')
@@ -440,7 +431,7 @@ class CmdUI:
                 self.clearScreen()
                 print('添加成功\n')
                 self.inputWithBack(input('按enter继续添加人员，输入0返回：'))
-        except BackToMenu:
+        except ReturnBack:
             return
         except KeyboardInterrupt:
             return
