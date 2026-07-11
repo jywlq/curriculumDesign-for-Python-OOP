@@ -125,10 +125,22 @@ class CmdUI:
         """显示人员统计信息"""
         stat = self.service.get_person_statistics()
         self.clear_screen()
-        print('=========人员统计=========')
-        for k, v in stat.items():
-            print(f'{k}：{v}')
-        self.input_with_back(input('按enter返回上级菜单'))
+        # 表格格式显示统计信息
+        print('╔══════════════════════════╗')
+        print('║       人员统计           ║')
+        print('╠══════════════════════════╣')
+        print('║  【总览】                ║')
+        print(f'║  总人数：{stat["总人数"]:<17}║')
+        print(f'║  男员工：{stat["男员工"]:<17}║')
+        print(f'║  女员工：{stat["女员工"]:<17}║')
+        print('╠══════════════════════════╣')
+        print('║  【按类型】              ║')
+        print(f'║  教师：    {stat["教师"]:<17}║')
+        print(f'║  实验员：  {stat["实验员"]:<17}║')
+        print(f'║  行政人员：{stat["行政人员"]:<15}║')
+        print(f'║  教师兼行政：{stat["教师兼行政人员"]:<13}║')
+        print('╚══════════════════════════╝')
+        self.input_with_back(input('\n按enter返回上级菜单'))
 
     def auto_save(self):
         """切换自动保存开关"""

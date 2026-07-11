@@ -66,9 +66,23 @@ class PersonService:
         return False
 
     def get_person_statistics(self) -> Dict[str, int]:
-        """统计各类人员数量（先检查子类再检查父类，避免重复计数）"""
-        res = {"教师": 0, "实验员": 0, "行政人员": 0, "教师兼行政人员": 0}
+        """统计总人数、性别分布和各类人员数量"""
+        res = {
+            "总人数": len(self.person_list),
+            "男员工": 0,
+            "女员工": 0,
+            "教师": 0,
+            "实验员": 0,
+            "行政人员": 0,
+            "教师兼行政人员": 0
+        }
         for p in self.person_list:
+            # 统计性别
+            if p._person_gender == "男":
+                res["男员工"] += 1
+            else:
+                res["女员工"] += 1
+            # 统计类型（先子类后父类，避免重复计数）
             if isinstance(p, TeacherAdmin):
                 res["教师兼行政人员"] += 1
             elif isinstance(p, Teacher):
