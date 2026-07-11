@@ -31,8 +31,8 @@ class CmdUI:
             "5": self.delete_person,
             "6": self.get_person_statistics,
             "7": self.auto_save,
-            "8": self.save,
-            "9": self.load_data,
+            "8": self.manual_save,
+            "9": self.manual_load,
         }
 
     def save(self):
@@ -40,6 +40,16 @@ class CmdUI:
 
     def load_data(self):
         self.service.load()
+
+    def manual_save(self):
+        """手动保存：执行保存后提示用户"""
+        self.save()
+        self.show_message('保存成功')
+
+    def manual_load(self):
+        """手动读取：执行读取后提示用户"""
+        self.load_data()
+        self.show_message('读取成功')
 
     def load_config(self):
         """从 config.json 加载自动保存开关状态"""
@@ -207,8 +217,7 @@ class CmdUI:
                     except ValueError:
                         self.show_message('序号无效')
                 else:
-                    if action_name:
-                        self.show_message('无效的操作编号')
+                    self.show_message('无效的操作编号')
         except (KeyboardInterrupt, ReturnBack):
             return None
 

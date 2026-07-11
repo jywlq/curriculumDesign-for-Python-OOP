@@ -149,7 +149,61 @@ ID_PATTERN = re.compile(r'^(T|E|A|TA)\d{3}$')
 
 ---
 
-## 4. 新增文档
+## 4. 数据格式统一
+
+将 `person.json` 中的 `__class__` 字段从 snake_case 改为 PascalCase，与类名保持一致。
+
+### 改动详情
+
+| 原值 | 新值 |
+|------|------|
+| `"teacher"` | `"Teacher"` |
+| `"experimenter"` | `"Experimenter"` |
+| `"admin"` | `"Admin"` |
+| `"teacher_admin"` | `"TeacherAdmin"` |
+
+### 涉及文件
+
+- `data/person.json`
+- `src/services/person_service.py`（还原 class_map 为简洁写法）
+
+---
+
+## 5. 手动保存/读取提示
+
+为手动保存（菜单8）和读取数据（菜单9）增加操作成功提示，不影响其他地方的保存/读取。
+
+### 改动详情
+
+| 操作 | 改动前 | 改动后 |
+|------|--------|--------|
+| 菜单8 手动保存 | 闪屏 | 清屏 + 显示"保存成功" |
+| 菜单9 读取数据 | 闪屏 | 清屏 + 显示"读取成功" |
+
+### 代码改动
+
+```python
+# 菜单映射改为 manual_save / manual_load
+"8": self.manual_save,
+"9": self.manual_load,
+
+# 新增两个方法，底层 save/load_data 不变
+def manual_save(self):
+    self.save()
+    self.show_message('保存成功')
+
+def manual_load(self):
+    self.load_data()
+    self.show_message('读取成功')
+```
+
+### 涉及文件
+
+- `src/ui/cmd_ui.py`
+
+---
+
+## 6. 新增文档
 
 - `docs/change.md` - 本文档，记录所有改动
 
