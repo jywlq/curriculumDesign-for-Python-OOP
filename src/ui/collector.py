@@ -4,8 +4,12 @@
 封装用户输入收集逻辑，根据人员类型动态收集对应字段。
 使用多态：调用 person_class.get_fields() 获取不同类型人员的特有字段。
 """
+import re
 from src.models import Teacher, Experimenter, Admin, TeacherAdmin
 from src.ui.exceptions import ReturnBack
+
+# 编号格式规则：类型前缀 + 三位数字
+ID_PATTERN = re.compile(r'^(T|E|A|TA)\d{3}$')
 
 
 class PersonCollector:
@@ -43,8 +47,9 @@ class PersonCollector:
 
     def collect_base_info(self, old_id: str = ''):
         """收集 BaseClass 的四个公共字段（编号/姓名/性别/年龄）"""
+        # 编号验证：格式为 类型前缀 + 三位数字，如 T001、E001、A001、TA001
         while True:
-            id = input("请输入编号：")
+            id = input("请输入编号（格式：T/E/A/TA + 三位数字，如 T001）：")
             if id == '0':
                 raise ReturnBack()
             if not id.strip():
@@ -53,16 +58,23 @@ class PersonCollector:
             if not id.isascii() or not id.isalnum():
                 print('编号只能包含字母和数字，请重新输入')
                 continue
+            if not ID_PATTERN.match(id):
+                print('编号格式错误，应为 T/E/A/TA + 三位数字（如 T001）')
+                continue
             if id != old_id and self.service.person_id_check(id):
                 print('编号已存在，请重新输入')
                 continue
             break
+        # 姓名验证：长度 2-20 字符
         while True:
-            name = input("请输入姓名：")
+            name = input("请输入姓名（2-20个字符）：")
             if name == '0':
                 raise ReturnBack()
             if not name.strip():
                 print('输入不能为空')
+                continue
+            if len(name.strip()) < 2 or len(name.strip()) > 20:
+                print('姓名长度必须在 2-20 个字符之间')
                 continue
             break
         while True:
@@ -76,8 +88,9 @@ class PersonCollector:
                 print('性别只能是男或女，请重新输入')
                 continue
             break
+        # 年龄验证：整数，范围 1-150
         while True:
-            age_str = input("请输入年龄：")
+            age_str = input("请输入年龄（1-150之间的整数）：")
             if age_str == '0':
                 raise ReturnBack()
             if not age_str.strip():
@@ -88,7 +101,7 @@ class PersonCollector:
                 if 1 <= age <= 150:
                     break
                 else:
-                    print("年龄必须在1到150之间")
+                    print("年龄必须在 1-150 之间")
             except ValueError:
                 print("年龄必须是一个整数")
         return {"personID": id, "personName": name, "personGender": gender, "personAge": age}

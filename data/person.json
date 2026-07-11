@@ -1,6 +1,6 @@
 [
     {
-        "__class__": "teacher",
+        "__class__": "Teacher",
         "personID": "T001",
         "personName": "张三",
         "personGender": "男",
@@ -10,7 +10,7 @@
         "professionalTitle": "副教授"
     },
     {
-        "__class__": "teacher",
+        "__class__": "Teacher",
         "personID": "T002",
         "personName": "李华",
         "personGender": "女",
@@ -20,7 +20,7 @@
         "professionalTitle": "讲师"
     },
     {
-        "__class__": "teacher",
+        "__class__": "Teacher",
         "personID": "T003",
         "personName": "王强",
         "personGender": "男",
@@ -30,7 +30,7 @@
         "professionalTitle": "教授"
     },
     {
-        "__class__": "teacher",
+        "__class__": "Teacher",
         "personID": "T004",
         "personName": "刘芳",
         "personGender": "女",
@@ -40,7 +40,7 @@
         "professionalTitle": "讲师"
     },
     {
-        "__class__": "teacher",
+        "__class__": "Teacher",
         "personID": "T005",
         "personName": "陈明",
         "personGender": "男",
@@ -50,7 +50,7 @@
         "professionalTitle": "教授"
     },
     {
-        "__class__": "experimenter",
+        "__class__": "Experimenter",
         "personID": "E001",
         "personName": "赵丽",
         "personGender": "女",
@@ -59,7 +59,7 @@
         "duties": "实验员"
     },
     {
-        "__class__": "experimenter",
+        "__class__": "Experimenter",
         "personID": "E002",
         "personName": "孙伟",
         "personGender": "男",
@@ -68,7 +68,7 @@
         "duties": "高级实验员"
     },
     {
-        "__class__": "experimenter",
+        "__class__": "Experimenter",
         "personID": "E003",
         "personName": "周娜",
         "personGender": "女",
@@ -77,7 +77,7 @@
         "duties": "实验员"
     },
     {
-        "__class__": "experimenter",
+        "__class__": "Experimenter",
         "personID": "E004",
         "personName": "吴刚",
         "personGender": "男",
@@ -86,7 +86,7 @@
         "duties": "实验室主任"
     },
     {
-        "__class__": "experimenter",
+        "__class__": "Experimenter",
         "personID": "E005",
         "personName": "郑婷",
         "personGender": "女",
@@ -95,7 +95,7 @@
         "duties": "实验助理"
     },
     {
-        "__class__": "admin",
+        "__class__": "Admin",
         "personID": "A001",
         "personName": "黄磊",
         "personGender": "男",
@@ -104,7 +104,7 @@
         "professionalTitle": "高级政工师"
     },
     {
-        "__class__": "admin",
+        "__class__": "Admin",
         "personID": "A002",
         "personName": "林静",
         "personGender": "女",
@@ -113,7 +113,7 @@
         "professionalTitle": "政工师"
     },
     {
-        "__class__": "admin",
+        "__class__": "Admin",
         "personID": "A003",
         "personName": "何军",
         "personGender": "男",
@@ -122,7 +122,7 @@
         "professionalTitle": "助理政工师"
     },
     {
-        "__class__": "admin",
+        "__class__": "Admin",
         "personID": "A004",
         "personName": "罗敏",
         "personGender": "女",
@@ -131,7 +131,7 @@
         "professionalTitle": "政工师"
     },
     {
-        "__class__": "admin",
+        "__class__": "Admin",
         "personID": "A005",
         "personName": "谢峰",
         "personGender": "男",
@@ -140,7 +140,7 @@
         "professionalTitle": "高级政工师"
     },
     {
-        "__class__": "teacher_admin",
+        "__class__": "TeacherAdmin",
         "personID": "TA001",
         "personName": "朱伟",
         "personGender": "男",
@@ -151,7 +151,7 @@
         "major": "计算机科学"
     },
     {
-        "__class__": "teacher_admin",
+        "__class__": "TeacherAdmin",
         "personID": "TA002",
         "personName": "胡娟",
         "personGender": "女",
@@ -162,7 +162,7 @@
         "major": "日语"
     },
     {
-        "__class__": "teacher_admin",
+        "__class__": "TeacherAdmin",
         "personID": "TA003",
         "personName": "郭涛",
         "personGender": "男",
@@ -173,7 +173,7 @@
         "major": "统计学"
     },
     {
-        "__class__": "teacher",
+        "__class__": "Teacher",
         "personID": "T006",
         "personName": "马超",
         "personGender": "男",
@@ -183,7 +183,7 @@
         "professionalTitle": "讲师"
     },
     {
-        "__class__": "teacher",
+        "__class__": "Teacher",
         "personID": "T007",
         "personName": "高雅",
         "personGender": "女",
@@ -193,7 +193,7 @@
         "professionalTitle": "助教"
     },
     {
-        "__class__": "experimenter",
+        "__class__": "Experimenter",
         "personID": "E006",
         "personName": "韩冰",
         "personGender": "男",
@@ -202,7 +202,7 @@
         "duties": "实验员"
     },
     {
-        "__class__": "experimenter",
+        "__class__": "Experimenter",
         "personID": "E007",
         "personName": "冯雪",
         "personGender": "女",
@@ -211,7 +211,7 @@
         "duties": "实习实验员"
     },
     {
-        "__class__": "admin",
+        "__class__": "Admin",
         "personID": "A006",
         "personName": "蒋平",
         "personGender": "男",
@@ -220,7 +220,7 @@
         "professionalTitle": "高级政工师"
     },
     {
-        "__class__": "teacher",
+        "__class__": "Teacher",
         "personID": "T008",
         "personName": "沈月",
         "personGender": "女",
@@ -230,7 +230,7 @@
         "professionalTitle": "讲师"
     },
     {
-        "__class__": "teacher",
+        "__class__": "Teacher",
         "personID": "T009",
         "personName": "韩梅",
         "personGender": "女",
@@ -240,7 +240,7 @@
         "professionalTitle": "助教"
     },
     {
-        "__class__": "teacher",
+        "__class__": "Teacher",
         "personID": "T010",
         "personName": "杨帆",
         "personGender": "男",
@@ -250,7 +250,7 @@
         "professionalTitle": "副教授"
     },
     {
-        "__class__": "teacher_admin",
+        "__class__": "TeacherAdmin",
         "personID": "TA004",
         "personName": "许晴",
         "personGender": "女",
@@ -261,7 +261,7 @@
         "major": "金融学"
     },
     {
-        "__class__": "experimenter",
+        "__class__": "Experimenter",
         "personID": "E008",
         "personName": "邓超",
         "personGender": "男",
@@ -270,7 +270,7 @@
         "duties": "实验员"
     },
     {
-        "__class__": "admin",
+        "__class__": "Admin",
         "personID": "A007",
         "personName": "曹磊",
         "personGender": "男",
@@ -279,7 +279,7 @@
         "professionalTitle": "高级政工师"
     },
     {
-        "__class__": "teacher",
+        "__class__": "Teacher",
         "personID": "T011",
         "personName": "彭丽",
         "personGender": "女",
@@ -289,7 +289,7 @@
         "professionalTitle": "助教"
     },
     {
-        "__class__": "experimenter",
+        "__class__": "Experimenter",
         "personID": "E009",
         "personName": "萧然",
         "personGender": "男",
