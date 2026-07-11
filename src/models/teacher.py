@@ -1,13 +1,14 @@
-# 教师类
+"""
+教师类模块
+"""
 from src.models.base import BaseClass
 
 
 class Teacher(BaseClass):
+    """教师类，继承 BaseClass，新增系部、专业、职称"""
+
     def __init__(self, person_id: str, person_name: str, person_gender: str, person_age: str,
                  department: str, major: str, professional_title: str):
-        '''
-        教师类：编号，姓名，性别，年龄,所在系部，专业，职称
-        '''
         super().__init__(person_id, person_name, person_gender, person_age)
         self._department = department
         self._major = major
@@ -15,6 +16,7 @@ class Teacher(BaseClass):
 
     @classmethod
     def get_fields(cls):
+        """返回教师特有字段定义"""
         return [("department", "所在系部"), ("major", "专业"), ("professionalTitle", "职称")]
 
     @classmethod

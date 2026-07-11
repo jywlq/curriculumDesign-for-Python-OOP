@@ -1,19 +1,21 @@
-# 行政人员类
+"""
+行政人员类模块
+"""
 from src.models.base import BaseClass
 
 
 class Admin(BaseClass):
+    """行政人员类，继承 BaseClass，新增政治面貌、职称"""
+
     def __init__(self, person_id: str, person_name: str, person_gender: str, person_age: str,
                  political_affiliation: str, professional_title: str):
-        '''
-        行政人员类：编号，姓名，性别，年龄，政治面貌，职称
-        '''
         super().__init__(person_id, person_name, person_gender, person_age)
         self._political_affiliation = political_affiliation
         self._professional_title = professional_title
 
     @classmethod
     def get_fields(cls):
+        """返回行政人员特有字段定义"""
         return [("politicalAffiliation", "政治面貌"), ("professionalTitle", "职称")]
 
     @classmethod

@@ -1,19 +1,21 @@
-# 实验员类
+"""
+实验员类模块
+"""
 from src.models.base import BaseClass
 
 
 class Experimenter(BaseClass):
+    """实验员类，继承 BaseClass，新增所在实验室、职务"""
+
     def __init__(self, person_id: str, person_name: str, person_gender: str, person_age: str,
                  laboratory: str, duties: str):
-        '''
-        实验员类：编号，姓名，性别，年龄，所在实验室，职务
-        '''
         super().__init__(person_id, person_name, person_gender, person_age)
         self._laboratory = laboratory
         self._duties = duties
 
     @classmethod
     def get_fields(cls):
+        """返回实验员特有字段定义"""
         return [("laboratory", "所在实验室"), ("duties", "职务")]
 
     @classmethod

@@ -1,16 +1,25 @@
-# 教师兼行政人员类
+"""
+教师兼行政人员类模块
+
+演示多重继承：同时继承 Teacher 和 Admin，合并两者特有字段。
+"""
 from src.models.base import BaseClass
 from src.models.teacher import Teacher
 from src.models.admin import Admin
 
 
 class TeacherAdmin(Teacher, Admin):
+    """
+    教师兼行政人员类（多重继承）
+    
+    同时拥有教师（系部、专业、职称）和行政人员（政治面貌）的属性。
+    构造函数直接调用 BaseClass.__init__() 而非 super()，绕开 MRO 问题。
+    """
+
     def __init__(self, person_id: str, person_name: str, person_gender: str, person_age: str,
                  department: str, major: str, professional_title: str,
                  political_affiliation: str):
-        '''
-        教师兼行政人员类：编号，姓名，性别，年龄，所在系部，专业，职称，政治面貌
-        '''
+        # 直接调用基类构造函数，避免多重继承的 MRO 问题
         BaseClass.__init__(self, person_id, person_name, person_gender, person_age)
         self._department = department
         self._major = major

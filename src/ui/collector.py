@@ -1,12 +1,17 @@
-# 人员信息收集器类
+"""
+人员信息收集器模块
+
+封装用户输入收集逻辑，根据人员类型动态收集对应字段。
+使用多态：调用 person_class.get_fields() 获取不同类型人员的特有字段。
+"""
 from src.models import Teacher, Experimenter, Admin, TeacherAdmin
 from src.ui.exceptions import ReturnBack
 
 
 class PersonCollector:
-    '''
-    人员信息收集器类：封装人员信息的输入收集逻辑
-    '''
+    """人员信息收集器：处理类型选择和字段输入"""
+
+    # 类型选择映射：支持序号和中文名称两种输入方式
     PERSON_TYPE = {
         "1": Teacher,
         "2": Experimenter,
@@ -22,9 +27,7 @@ class PersonCollector:
         self.service = service
 
     def select_type(self):
-        '''
-        选择人员类型，返回类对象
-        '''
+        """选择人员类型，返回对应的类对象"""
         while True:
             person_type = input("请输入人员类型或序号(1.老师/2.实验员/3.行政人员/4.老师兼行政人员)：")
             if person_type == '0':
@@ -39,9 +42,7 @@ class PersonCollector:
             return person_class
 
     def collect_base_info(self, old_id: str = ''):
-        '''
-        收集BaseClass的四个字段，返回字典
-        '''
+        """收集 BaseClass 的四个公共字段（编号/姓名/性别/年龄）"""
         while True:
             id = input("请输入编号：")
             if id == '0':
@@ -93,9 +94,12 @@ class PersonCollector:
         return {"personID": id, "personName": name, "personGender": gender, "personAge": age}
 
     def collect_extra_fields(self, person_class):
-        '''
-        收集类特有字段，调用get_fields()获取字段列表，返回字典
-        '''
+        """
+        收集子类特有字段
+        
+        通过 get_fields() 动态获取字段定义，实现多态。
+        不同类型人员调用各自的 get_fields() 返回不同的字段列表。
+        """
         data = {}
         for field, prompt in person_class.get_fields():
             while True:
@@ -110,9 +114,7 @@ class PersonCollector:
         return data
 
     def collect(self, old_id: str = ''):
-        '''
-        收集完整人员信息，返回(类型类, 数据字典)
-        '''
+        """收集完整人员信息，返回 (类型类, 数据字典) 元组"""
         person_class = self.select_type()
         data = self.collect_base_info(old_id)
         data.update(self.collect_extra_fields(person_class))

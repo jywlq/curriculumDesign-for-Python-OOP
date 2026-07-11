@@ -1,4 +1,9 @@
-# 命令行交互界面（菜单、输入输出）
+"""
+命令行交互界面模块
+
+负责菜单显示、用户输入处理和界面控制。
+使用异常机制实现"输入 0 返回上级菜单"，复用 _filter_list 方法减少代码重复。
+"""
 import os
 import json
 from src.services import PersonService
@@ -8,6 +13,8 @@ from src.ui.collector import PersonCollector
 
 
 class CmdUI:
+    """命令行用户界面主类"""
+
     CONFIG_FILE = 'data/config.json'
 
     def __init__(self):
@@ -15,9 +22,7 @@ class CmdUI:
         self.collector = PersonCollector(self.service)
         self.auto_save_on = False
         self.load_config()
-        '''
-        菜单映射方法
-        '''
+        # 菜单编号到方法的映射
         self.MENU = {
             "1": self.add_person,
             "2": self.find_person,
@@ -37,7 +42,7 @@ class CmdUI:
         self.service.load()
 
     def load_config(self):
-        '''加载配置文件'''
+        """从 config.json 加载自动保存开关状态"""
         try:
             with open(self.CONFIG_FILE, 'r', encoding='utf-8') as f:
                 config = json.load(f)
@@ -46,21 +51,21 @@ class CmdUI:
             pass
 
     def save_config(self):
-        '''保存配置文件'''
+        """将自动保存开关状态持久化到 config.json"""
         with open(self.CONFIG_FILE, 'w', encoding='utf-8') as f:
             json.dump({'autoSaveOn': self.auto_save_on}, f, ensure_ascii=False, indent=4)
 
-    def save_if_auto(self):  # 识别自动存储开关
+    def save_if_auto(self):
+        """自动保存：如果开启则保存，否则不操作"""
         if self.auto_save_on:
             self.save()
 
-    def data_change(self):  # 统一调用数据变更后操作
+    def data_change(self):
+        """数据变更后的统一操作入口"""
         self.save_if_auto()
 
     def run(self):
-        '''
-        主循环
-        '''
+        """主循环：显示菜单 → 接收输入 → 分发到对应方法"""
         self.load_data()
         try:
             while True:
@@ -77,12 +82,11 @@ class CmdUI:
             print('\n已保存，退出系统')
 
     def find_person(self):
-        '''
-        列表筛选：初始显示全部，支持累积筛选
-        '''
+        """人员查询：复用筛选逻辑"""
         self._filter_list('人员查询')
 
     def show_all_person(self):
+        """显示所有人员记录"""
         try:
             self.clear_screen()
             print("=========所有人员列表如下=========")
@@ -93,17 +97,13 @@ class CmdUI:
             return
 
     def update_person(self):
-        '''
-        修改人员：复用筛选逻辑，用户筛选后输入序号修改
-        '''
+        """修改人员：筛选后输入序号修改"""
         person = self._filter_list('修改人员', '修改')
         if person:
             self.update_by_index(person)
 
     def delete_person(self):
-        '''
-        删除人员：复用筛选逻辑，用户筛选后输入序号删除
-        '''
+        """删除人员：筛选后输入序号删除"""
         pf = PersonFilter(self.service)
         while True:
             person = self._filter_list('删除人员', '删除', pf)
@@ -112,6 +112,7 @@ class CmdUI:
             self.delete_by_index(person)
 
     def get_person_statistics(self):
+        """显示人员统计信息"""
         stat = self.service.get_person_statistics()
         self.clear_screen()
         print('=========人员统计=========')
@@ -120,6 +121,7 @@ class CmdUI:
         self.input_with_back(input('按enter返回上级菜单'))
 
     def auto_save(self):
+        """切换自动保存开关"""
         self.auto_save_on = not self.auto_save_on
         self.save_config()
         if self.auto_save_on:
@@ -128,30 +130,26 @@ class CmdUI:
             self.show_message('自动保存已关闭')
 
     def input_with_back(self, value: str):
-        '''
-        带返回功能的输入，0返回ReturnBack异常
-        '''
+        """输入包装：输入 0 时抛出 ReturnBack 异常实现返回"""
         if value == '0':
             raise ReturnBack()
         return value
 
     def is_empty(self, value: str):
-        '''
-        判空，为空返回True打印提示
-        '''
+        """判空：为空返回 True 并打印提示"""
         if not value.strip():
             print('输入不能为空')
             return True
         return False
 
     def show_message(self, msg):
-        '''清屏 → 显示提示 → 按enter继续'''
+        """清屏 → 显示消息 → 按 enter 继续"""
         self.clear_screen()
         print(msg)
         self.input_with_back(input('按enter继续'))
 
     def show_filter_menu(self, pf):
-        '''显示筛选菜单'''
+        """显示筛选菜单（当前筛选状态）"""
         print()
         if pf.filter_id:
             print(f'1. 按编号筛选 --> {pf.filter_id}')
@@ -164,13 +162,16 @@ class CmdUI:
         print('3. 重置（清除所有筛选）')
 
     def _filter_list(self, title, action_name=None, pf=None):
-        '''
-        通用的筛选+选择人员流程
-        title: 页面标题
-        action_name: 操作名称，如"删除"/"修改"，None表示只查询
-        pf: PersonFilter对象，为None时创建新的
-        返回: 选中的人员对象，或 None（用户返回或只查询）
-        '''
+        """
+        通用的筛选 + 选择人员流程
+        
+        查询、修改、删除三个功能共用此方法，减少代码重复。
+        - 查询：action_name=None，只展示筛选结果
+        - 修改/删除：action_name="修改"/"删除"，支持选择具体人员
+        
+        Returns:
+            选中的人员对象，或 None（用户返回/只查询）
+        """
         try:
             if pf is None:
                 pf = PersonFilter(self.service)
@@ -212,7 +213,7 @@ class CmdUI:
             return None
 
     def delete_by_index(self, person):
-        '''删除人员，返回是否成功'''
+        """删除确认：y 确认删除，n 取消"""
         while True:
             confirm = self.input_with_back(input(f'确认删除 {person._person_name}({person._person_id})？(y/n)：'))
             if confirm.lower() == 'y':
@@ -229,7 +230,7 @@ class CmdUI:
                 print('请输入y或n')
 
     def update_by_index(self, person):
-        '''修改人员'''
+        """执行修改操作"""
         try:
             person_class, data = self.collector.collect(person._person_id)
         except (ReturnBack, KeyboardInterrupt):
@@ -241,15 +242,14 @@ class CmdUI:
             self.show_message('修改失败')
 
     def clear_screen(self):
-        '''
-        清屏
-        '''
+        """跨平台清屏"""
         if os.name == 'nt':
             os.system('cls')  # Windows
         else:
             os.system('clear')  # Linux/Mac
 
     def show_menu(self):
+        """显示主菜单"""
         print('欢迎使用人员信息管理系统')
         print('1. 添加人员')
         print('2. 查询人员')
@@ -263,6 +263,7 @@ class CmdUI:
         print('0. 退出系统')
 
     def add_person(self):
+        """添加人员：支持连续添加"""
         try:
             print('添加人员')
             print('输入0返回上级菜单')
