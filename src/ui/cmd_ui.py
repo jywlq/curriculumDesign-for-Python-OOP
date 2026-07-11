@@ -7,6 +7,8 @@
 import os
 import json
 from src.services import PersonService
+from src.services.csv_export import DataExporter
+from src.services.csv_import import DataImporter
 from src.ui.exceptions import ReturnBack
 from src.ui.filter import PersonFilter
 from src.ui.collector import PersonCollector
@@ -33,6 +35,8 @@ class CmdUI:
             "7": self.auto_save,
             "8": self.manual_save,
             "9": self.manual_load,
+            "10": self.export_csv,
+            "11": self.import_csv,
         }
 
     def save(self):
@@ -50,6 +54,51 @@ class CmdUI:
         """手动读取：执行读取后提示用户"""
         self.load_data()
         self.show_message('读取成功')
+
+    def export_csv(self):
+        """导出人员数据为 CSV 文件"""
+        try:
+            DataExporter.export_csv(self.service.person_list)
+            self.show_message('导出成功，文件保存在 data/person.csv')
+        except Exception as e:
+            self.show_message(f'导出失败：{e}')
+
+    def import_csv(self):
+        """导入CSV数据"""
+        while True:
+            try:
+                self.clear_screen()
+                print('===== CSV数据导入 =====')
+                print()
+                print('请将CSV文件放入 data/import/ 目录')
+                print('文件需包含表头：编号,姓名,性别,年龄,类型,特有字段')
+                print('注意：请勿重复导入，表头逗号为英文逗号')
+                print()
+                filename = input('请输入文件名（如 test.csv）：')
+                if filename == '0':
+                    return
+                filepath = f'data/import/{filename}'
+                persons, skipped = DataImporter.import_csv(filepath)
+                # 过滤编号重复的
+                added = 0
+                for p in persons:
+                    if not self.service.person_id_check(p._person_id):
+                        self.service.add_person(p)
+                        added += 1
+                    else:
+                        skipped += 1
+                self.data_change()
+                msg = f'导入完成：成功 {added} 条'
+                if skipped > 0:
+                    msg += f'，跳过 {skipped} 条（重复或格式错误）'
+                self.show_message(msg)
+                return  # 成功后返回主菜单
+            except FileNotFoundError:
+                self.show_message(f'未找到文件：{filepath}')
+            except Exception as e:
+                self.show_message(f'导入失败：{e}')
+            except KeyboardInterrupt:
+                return
 
     def load_config(self):
         """从 config.json 加载自动保存开关状态"""
@@ -281,6 +330,8 @@ class CmdUI:
         print('7. 自动保存', "(已开启)" if self.auto_save_on else "(已关闭)")
         print('8. 手动保存')
         print('9. 读取数据')
+        print('10. 导出CSV')
+        print('11. 导入CSV')
         print('0. 退出系统')
 
     def add_person(self):
