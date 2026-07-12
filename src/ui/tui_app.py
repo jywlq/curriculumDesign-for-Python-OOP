@@ -91,10 +91,9 @@ def render_welcome_page(service: PersonService, auto_save: bool) -> Panel:
     content.add_row(stat_panel)
 
     # 提示信息
-    status_icon = "✅" if auto_save else "⚠️ "
     status_text = Text(
-        f"\n{status_icon} 自动保存: {'已开启' if auto_save else '已关闭'}    "
-        f"💡 从左侧菜单选择功能开始使用\n",
+        f"\n💡 右上角开关自动保存功能    "
+        f"📌 从左侧菜单选择功能开始使用\n",
         style="dim"
     )
     content.add_row(status_text)
@@ -305,7 +304,7 @@ class MenuItem(ListItem):
 class Sidebar(Container):
     """左侧导航栏"""
 
-    active_index = reactive(0)
+    active_index = reactive(-1)
 
     DEFAULT_CSS = """
     Sidebar {
@@ -343,8 +342,9 @@ class Sidebar(Container):
     def compose(self) -> ComposeResult:
         yield Static("📁 功能菜单", id="sidebar-title")
 
-        # 构建带分组的菜单项
-        items = []
+        # 构建菜单项：先加 Welcome，再按分组加其他项
+        items = [MenuItem("🏠", "Welcome!", -1)]
+
         current_group = None
         for i, (icon, name, group) in enumerate(MENU_ITEMS):
             if group != current_group:
@@ -567,6 +567,12 @@ class MainContent(Container):
         index = event.index
         content = self.query_one("#content-area", Vertical)
         content.remove_children()
+
+        # Welcome 页面
+        if index == -1:
+            page = WelcomePage(self.service, self.auto_save)
+            content.mount(page)
+            return
 
         icon, name, _ = MENU_ITEMS[index]
 
