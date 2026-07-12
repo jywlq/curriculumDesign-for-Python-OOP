@@ -152,7 +152,7 @@ class CmdUI:
             for p in self.service.person_list:
                 print(p)
             self.input_with_back(input("按enter返回上级菜单"))
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt,ReturnBack):
             return
 
     def update_person(self):
@@ -174,22 +174,26 @@ class CmdUI:
         """显示人员统计信息"""
         stat = self.service.get_person_statistics()
         self.clear_screen()
-        # 表格格式显示统计信息
-        print('╔══════════════════════════╗')
-        print('║       人员统计           ║')
-        print('╠══════════════════════════╣')
-        print('║  【总览】                ║')
-        print(f'║  总人数：{stat["总人数"]:<17}║')
-        print(f'║  男员工：{stat["男员工"]:<17}║')
-        print(f'║  女员工：{stat["女员工"]:<17}║')
-        print('╠══════════════════════════╣')
-        print('║  【按类型】              ║')
-        print(f'║  教师：    {stat["教师"]:<17}║')
-        print(f'║  实验员：  {stat["实验员"]:<17}║')
-        print(f'║  行政人员：{stat["行政人员"]:<15}║')
-        print(f'║  教师兼行政：{stat["教师兼行政人员"]:<13}║')
-        print('╚══════════════════════════╝')
-        self.input_with_back(input('\n按enter返回上级菜单'))
+        # 使用固定宽度格式化，手动补空格对齐
+        print('┌────────────────────────┐')
+        print('│       人员统计         │')
+        print('├────────────────────────┤')
+        print('│  【总览】              │')
+        print(f'│  总人数：{str(stat["总人数"]).ljust(14)}│')
+        print(f'│  男员工：{str(stat["男员工"]).ljust(14)}│')
+        print(f'│  女员工：{str(stat["女员工"]).ljust(14)}│')
+        print('├────────────────────────┤')
+        print('│  【按类型】            │')
+        print(f'│ 教师：{str(stat["教师"]).ljust(17)}│')
+        print(f'│ 实验员：{str(stat["实验员"]).ljust(15)}│')
+        print(f'│ 行政人员：{str(stat["行政人员"]).ljust(13)}│')
+        print(f'│ 教师兼行政：{str(stat["教师兼行政人员"]).ljust(11)}│')
+        print('└────────────────────────┘')
+        #捕获返回   
+        try:
+            self.input_with_back(input('\n按enter返回上级菜单'))
+        except (KeyboardInterrupt,ReturnBack):
+            return
 
     def auto_save(self):
         """切换自动保存开关"""
