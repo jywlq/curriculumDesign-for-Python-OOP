@@ -19,6 +19,7 @@ from rich import box
 from src.services import PersonService
 from src.services.config import load_auto_save, save_auto_save
 from src.ui.person_list_page import PersonListPage
+from src.ui.person_filter_page import PersonFilterPage
 from src.ui.constants import (
     TYPE_META, STAT_TOTAL, STAT_MALE, STAT_FEMALE,
     STAT_TEACHER, STAT_EXPERIMENTER, STAT_ADMIN, STAT_TEACHER_ADMIN,
@@ -327,62 +328,6 @@ class MenuSelected(events.Message):
         super().__init__()
 
 
-# ── 内容页：welcome页、占位页、Rich Panel页 ──
-
-class WelcomePage(VerticalScroll):
-    """欢迎页,显示统计概览"""
-
-    DEFAULT_CSS = """
-    WelcomePage {
-        height: 100%;
-        padding: 1 2;
-    }
-    WelcomePage > Static {
-        height: auto;
-    }
-    """
-
-    def __init__(self, service: PersonService, auto_save: bool):
-        self.service = service
-        self.auto_save = auto_save
-        super().__init__()
-
-    def compose(self) -> ComposeResult:
-        panel = render_welcome_page(self.service, self.auto_save)
-        yield Static(panel)
-
-    def refresh_data(self) -> None:
-        """刷新统计数据"""
-        self.remove_children()
-        panel = render_welcome_page(self.service, self.auto_save)
-        self.mount(Static(panel))
-
-
-# ── 内容区 - 占位页 ──
-
-class PlaceholderPage(VerticalScroll):
-    """占位内容页"""
-
-    DEFAULT_CSS = """
-    PlaceholderPage {
-        height: 100%;
-        padding: 1 2;
-    }
-    PlaceholderPage > Static {
-        height: auto;
-    }
-    """
-
-    def __init__(self, title: str, icon: str = "🚧"):
-        self.page_title = title
-        self.icon = icon
-        super().__init__()
-
-    def compose(self) -> ComposeResult:
-        panel = render_placeholder_page(self.page_title, self.icon)
-        yield Static(panel)
-
-
 # ── 顶部状态栏 ──
 
 class AutoSaveToggled(events.Message):
@@ -467,8 +412,11 @@ class MainContent(Container):
 
     # 菜单名称 → 页面构造函数的映射
     PAGE_MAP = {
-        "统计人员": lambda svc, auto: RichPanelPage(render_statistics_page(svc)),
+        "查询人员": lambda svc, auto: PersonFilterPage(svc, "查询"),
         "显示人员": lambda svc, auto: PersonListPage(svc),
+        "修改人员": lambda svc, auto: PersonFilterPage(svc, "修改"),
+        "删除人员": lambda svc, auto: PersonFilterPage(svc, "删除"),
+        "统计人员": lambda svc, auto: RichPanelPage(render_statistics_page(svc)),
     }
 
     def __init__(self, service: PersonService, auto_save: bool):
@@ -480,17 +428,17 @@ class MainContent(Container):
         with Horizontal():
             yield Sidebar()
             yield Vertical(
-                WelcomePage(self.service, self.auto_save),
+                RichPanelPage(render_welcome_page(self.service, self.auto_save)),
                 id="content-area"
             )
 
     def _build_page(self, index: int):
         """根据菜单索引构建页面组件（统一页面构建逻辑）"""
         if index == -1:
-            return WelcomePage(self.service, self.auto_save)
+            return RichPanelPage(render_welcome_page(self.service, self.auto_save))
         icon, name, _ = MENU_ITEMS[index]
         builder = self.PAGE_MAP.get(name)
-        return builder(self.service, self.auto_save) if builder else PlaceholderPage(name, icon)
+        return builder(self.service, self.auto_save) if builder else RichPanelPage(render_placeholder_page(name, icon))
 
     def on_menu_selected(self, event: MenuSelected) -> None:
         """处理菜单选中消息"""
@@ -504,7 +452,7 @@ class MainContent(Container):
         sidebar = self.query_one(Sidebar)
         if sidebar.active_index is None or sidebar.active_index < 0:
             content.remove_children()
-            content.mount(WelcomePage(self.service, self.auto_save))
+            content.mount(RichPanelPage(render_welcome_page(self.service, self.auto_save)))
 
 
 # ── App 主类 ──

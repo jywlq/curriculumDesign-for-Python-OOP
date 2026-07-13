@@ -27,6 +27,14 @@ class BaseClass:
         """返回子类特有字段列表，基类返回空列表（模板方法）"""
         return []
 
+    def get_display_fields(self, brief: bool = False) -> list:
+        """返回用于展示的特有字段值列表
+
+        brief=True: 返回 1-2 个关键字段（用于列表行）
+        brief=False: 返回全部特有字段（用于详情页）
+        """
+        return []
+
     @classmethod
     def from_dict(cls, d: dict) -> 'BaseClass':
         """从字典反序列化"""

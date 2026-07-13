@@ -18,6 +18,10 @@ class Experimenter(BaseClass):
         """返回实验员特有字段定义"""
         return [("laboratory", "所在实验室"), ("duties", "职务")]
 
+    def get_display_fields(self, brief: bool = False) -> list:
+        """返回用于展示的特有字段值"""
+        return [self._laboratory, self._duties]
+
     @classmethod
     def from_dict(cls, d: dict):
         return cls(d['personID'], d['personName'], d['personGender'], d['personAge'],

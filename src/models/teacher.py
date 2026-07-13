@@ -19,6 +19,12 @@ class Teacher(BaseClass):
         """返回教师特有字段定义"""
         return [("department", "所在系部"), ("major", "专业"), ("professionalTitle", "职称")]
 
+    def get_display_fields(self, brief: bool = False) -> list:
+        """返回用于展示的特有字段值"""
+        if brief:
+            return [self._department, self._professional_title]
+        return [self._department, self._major, self._professional_title]
+
     @classmethod
     def from_dict(cls, d: dict):
         return cls(d['personID'], d['personName'], d['personGender'], d['personAge'],

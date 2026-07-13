@@ -44,22 +44,8 @@ def render_person_detail_modal(person) -> Panel:
     info_parts.append(gender_icon)
     info_parts.append(f"{person._person_age} 岁")
 
-    # 特有字段（根据类型）
-    if person_type == "Teacher":
-        info_parts.append(person._department)
-        info_parts.append(person._major)
-        info_parts.append(person._professional_title)
-    elif person_type == "Experimenter":
-        info_parts.append(person._laboratory)
-        info_parts.append(person._duties)
-    elif person_type == "Admin":
-        info_parts.append(person._political_affiliation)
-        info_parts.append(person._professional_title)
-    elif person_type == "TeacherAdmin":
-        info_parts.append(person._department)
-        info_parts.append(person._major)
-        info_parts.append(person._professional_title)
-        info_parts.append(person._political_affiliation)
+    # 特有字段（通过多态方法获取）
+    info_parts.extend(person.get_display_fields(brief=False))
 
     info_line = Text("  " + "  |  ".join(info_parts) + "  ", style="white")
 

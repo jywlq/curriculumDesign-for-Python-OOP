@@ -37,16 +37,8 @@ def _build_row_text(person, index: int) -> Text:
         gender_style = "magenta"
 
     # 副信息（1-2 个特有字段）
-    if person_type == "Teacher":
-        sub_info = f"{person._department} · {person._professional_title}"
-    elif person_type == "Experimenter":
-        sub_info = f"{person._laboratory} · {person._duties}"
-    elif person_type == "Admin":
-        sub_info = f"{person._political_affiliation} · {person._professional_title}"
-    elif person_type == "TeacherAdmin":
-        sub_info = f"{person._department} · {person._political_affiliation}"
-    else:
-        sub_info = ""
+    display_fields = person.get_display_fields(brief=True)
+    sub_info = " · ".join(display_fields) if display_fields else ""
 
     # 组装
     line = Text()
@@ -218,9 +210,10 @@ class PersonListPage(VerticalScroll):
     }
     """
 
-    def __init__(self, service: PersonService):
+    def __init__(self, service: PersonService, persons: list = None, on_select_callback=None):
         self.service = service
-        self.persons = service.person_list.copy()
+        self.persons = persons if persons is not None else service.person_list.copy()
+        self.on_select_callback = on_select_callback
         super().__init__()
 
     def compose(self) -> ComposeResult:
@@ -243,7 +236,10 @@ class PersonListPage(VerticalScroll):
         yield ListView(*items, id="person-list")
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
-        """行选中事件 - 点击或按 Enter 弹出详情"""
+        """行选中事件 - 点击或按 Enter 触发"""
         item = event.item
         if isinstance(item, PersonListItem):
-            self.app.push_screen(PersonDetailScreen(item.person))
+            if self.on_select_callback:
+                self.on_select_callback(item.person)
+            else:
+                self.app.push_screen(PersonDetailScreen(item.person))

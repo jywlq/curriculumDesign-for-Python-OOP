@@ -18,6 +18,10 @@ class Admin(BaseClass):
         """返回行政人员特有字段定义"""
         return [("politicalAffiliation", "政治面貌"), ("professionalTitle", "职称")]
 
+    def get_display_fields(self, brief: bool = False) -> list:
+        """返回用于展示的特有字段值"""
+        return [self._political_affiliation, self._professional_title]
+
     @classmethod
     def from_dict(cls, d: dict):
         return cls(d['personID'], d['personName'], d['personGender'], d['personAge'],

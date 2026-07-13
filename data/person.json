@@ -1,16 +1,6 @@
 [
     {
         "__class__": "Teacher",
-        "personID": "T001",
-        "personName": "张三",
-        "personGender": "男",
-        "personAge": "35",
-        "department": "计算机系",
-        "major": "软件工程",
-        "professionalTitle": "副教授"
-    },
-    {
-        "__class__": "Teacher",
         "personID": "T002",
         "personName": "李华",
         "personGender": "女",
@@ -277,24 +267,5 @@
         "personAge": "55",
         "politicalAffiliation": "党员",
         "professionalTitle": "高级政工师"
-    },
-    {
-        "__class__": "Teacher",
-        "personID": "T011",
-        "personName": "彭丽",
-        "personGender": "女",
-        "personAge": "28",
-        "department": "艺术系",
-        "major": "美术",
-        "professionalTitle": "助教"
-    },
-    {
-        "__class__": "Experimenter",
-        "personID": "E009",
-        "personName": "萧然",
-        "personGender": "男",
-        "personAge": "37",
-        "laboratory": "化学实验室",
-        "duties": "实验室副主任"
     }
 ]
