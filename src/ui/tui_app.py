@@ -17,13 +17,9 @@ from rich.table import Table
 from rich import box
 
 from src.services import PersonService
-import json
+from src.services.config import load_auto_save, save_auto_save
 
 
-
-#文件常量定义
-
-CONFIG_FILE = 'data/config.json'
 
 # 菜单项配置：(图标, 名称, 分组)
 MENU_ITEMS = [                      #菜单栏映射
@@ -641,17 +637,11 @@ class PersonTuiApp(App):
 
     def load_config(self):
         """从 config.json 加载自动保存开关状态"""
-        try:
-            with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
-                config = json.load(f)
-            self.auto_save_on = config.get('autoSaveOn', False)
-        except (FileNotFoundError, json.JSONDecodeError):
-            pass
+        self.auto_save_on = load_auto_save()
 
     def save_config(self):
         """将自动保存开关状态持久化到 config.json"""
-        with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
-            json.dump({'autoSaveOn': self.auto_save_on}, f, ensure_ascii=False, indent=4)
+        save_auto_save(self.auto_save_on)
 
     def compose(self) -> ComposeResult:
         yield StatusBar(self.auto_save_on)

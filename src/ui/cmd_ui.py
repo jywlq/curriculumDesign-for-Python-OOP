@@ -7,6 +7,7 @@
 import os
 import json
 from src.services import PersonService
+from src.services.config import load_auto_save, save_auto_save
 from src.services.csv_export import DataExporter
 from src.services.csv_import import DataImporter
 from src.ui.exceptions import ReturnBack
@@ -102,17 +103,11 @@ class CmdUI:
 
     def load_config(self):
         """从 config.json 加载自动保存开关状态"""
-        try:
-            with open(self.CONFIG_FILE, 'r', encoding='utf-8') as f:
-                config = json.load(f)
-            self.auto_save_on = config.get('autoSaveOn', False)
-        except (FileNotFoundError, json.JSONDecodeError):
-            pass
+        self.auto_save_on = load_auto_save()
 
     def save_config(self):
         """将自动保存开关状态持久化到 config.json"""
-        with open(self.CONFIG_FILE, 'w', encoding='utf-8') as f:
-            json.dump({'autoSaveOn': self.auto_save_on}, f, ensure_ascii=False, indent=4)
+        save_auto_save(self.auto_save_on)
 
     def save_if_auto(self):
         """自动保存：如果开启则保存，否则不操作"""
