@@ -1,7 +1,7 @@
 [
     {
         "__class__": "Teacher",
-        "personID": "T002",
+        "personID": "T001",
         "personName": "李华",
         "personGender": "女",
         "personAge": "28",
@@ -258,14 +258,5 @@
         "personAge": "31",
         "laboratory": "物理实验室",
         "duties": "实验员"
-    },
-    {
-        "__class__": "Admin",
-        "personID": "A007",
-        "personName": "曹磊",
-        "personGender": "男",
-        "personAge": "55",
-        "politicalAffiliation": "党员",
-        "professionalTitle": "高级政工师"
     }
 ]

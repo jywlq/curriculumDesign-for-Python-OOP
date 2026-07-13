@@ -75,9 +75,10 @@ class PersonDeleteConfirmScreen(Screen):
     }
     """
 
-    def __init__(self, person, service: PersonService):
+    def __init__(self, person, service: PersonService, on_done=None):
         self.person = person
         self.service = service
+        self.on_done = on_done
         super().__init__()
 
     def compose(self) -> ComposeResult:
@@ -101,6 +102,8 @@ class PersonDeleteConfirmScreen(Screen):
                 )
                 # 发送数据变更消息
                 self.post_message(DataChanged())
+                if self.on_done:
+                    self.on_done()
                 self.app.pop_screen()
             else:
                 self.app.notify("删除失败", title="错误", severity="error", timeout=3)

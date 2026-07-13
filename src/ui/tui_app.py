@@ -26,6 +26,9 @@ from src.ui.constants import (
     BAR_BLOCK_PERCENT, BAR_TOTAL_BLOCKS,
 )
 from src.ui.widgets import RichPanelPage
+from src.services.csv_export import DataExporter
+from src.services.csv_import import DataImporter
+from src.ui.person_add_screen import PersonAddScreen
 
 
 
@@ -442,6 +445,60 @@ class MainContent(Container):
 
     def on_menu_selected(self, event: MenuSelected) -> None:
         """处理菜单选中消息"""
+        if event.index == -1:
+            # Welcome page
+            content = self.query_one("#content-area", Vertical)
+            content.remove_children()
+            content.mount(self._build_page(event.index))
+            return
+
+        icon, name, _ = MENU_ITEMS[event.index]
+
+        # 操作类菜单项：不切换页面，直接执行操作
+        if name == "添加人员":
+            self.app.push_screen(PersonAddScreen(self.service, on_done=self._refresh_current_page))
+            return
+        elif name == "手动保存":
+            try:
+                self.service.save()
+                self.app.notify("💾 数据已保存", title="保存成功", severity="information", timeout=2)
+                self._refresh_current_page()
+            except Exception as e:
+                self.app.notify(f"保存失败：{e}", title="错误", severity="error", timeout=3)
+            return
+        elif name == "读取数据":
+            try:
+                self.service.load()
+                self.app.notify("📂 数据已重新加载", title="读取成功", severity="information", timeout=2)
+                self._refresh_current_page()
+            except Exception as e:
+                self.app.notify(f"加载失败：{e}", title="错误", severity="error", timeout=3)
+            return
+        elif name == "导出 CSV":
+            try:
+                DataExporter.export_csv(self.service.person_list)
+                self.app.notify("📤 数据已导出到 data/person.csv", title="导出成功", severity="information", timeout=3)
+            except Exception as e:
+                self.app.notify(f"导出失败：{e}", title="错误", severity="error", timeout=3)
+            return
+        elif name == "导入 CSV":
+            try:
+                new_persons, skipped = DataImporter.import_csv()
+                if new_persons:
+                    for p in new_persons:
+                        self.service.add_person(p)
+                msg = f"📥 成功导入 {len(new_persons)} 条记录"
+                if skipped > 0:
+                    msg += f"，跳过 {skipped} 条"
+                self.app.notify(msg, title="导入完成", severity="information", timeout=3)
+                self._refresh_current_page()
+            except FileNotFoundError:
+                self.app.notify("找不到 data/person.csv 文件", title="导入失败", severity="error", timeout=3)
+            except Exception as e:
+                self.app.notify(f"导入失败：{e}", title="错误", severity="error", timeout=3)
+            return
+
+        # 其他菜单项：正常切换页面
         content = self.query_one("#content-area", Vertical)
         content.remove_children()
         content.mount(self._build_page(event.index))
@@ -453,6 +510,14 @@ class MainContent(Container):
         if sidebar.active_index is None or sidebar.active_index < 0:
             content.remove_children()
             content.mount(RichPanelPage(render_welcome_page(self.service, self.auto_save)))
+
+    def _refresh_current_page(self) -> None:
+        """刷新当前页面数据"""
+        sidebar = self.query_one(Sidebar)
+        content = self.query_one("#content-area", Vertical)
+        active_idx = sidebar.active_index
+        content.remove_children()
+        content.mount(self._build_page(active_idx))
 
 
 # ── App 主类 ──

@@ -100,13 +100,9 @@ class PersonFilterPage(VerticalScroll):
         if self.action_name == "查询":
             self.app.push_screen(PersonDetailScreen(person))
         elif self.action_name == "修改":
-            self.app.push_screen(PersonEditScreen(person, self.service))
-            # 使用 call_after_refresh 在弹窗关闭后刷新
-            self.call_after_refresh(self._refresh_list)
+            self.app.push_screen(PersonEditScreen(person, self.service, on_done=self._refresh_list))
         elif self.action_name == "删除":
-            self.app.push_screen(PersonDeleteConfirmScreen(person, self.service))
-            # 使用 call_after_refresh 在弹窗关闭后刷新
-            self.call_after_refresh(self._refresh_list)
+            self.app.push_screen(PersonDeleteConfirmScreen(person, self.service, on_done=self._refresh_list))
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         """输入框按 Enter 触发筛选"""
