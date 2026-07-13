@@ -12,10 +12,8 @@ from rich.panel import Panel
 from rich.table import Table
 from rich import box
 
+from src.ui.constants import TYPE_META
 
-# ──────────────────────────────────────────────
-# 辅助函数：构建详情内容的 rich Panel
-# ──────────────────────────────────────────────
 
 def render_person_detail_modal(person) -> Panel:
     """渲染人员详情弹窗的内容面板（紧凑一行式）
@@ -28,15 +26,7 @@ def render_person_detail_modal(person) -> Panel:
     └─────────────────────────────────────┘
     """
     person_type = type(person).__name__
-
-    # 类型 → (图标, 中文名, 主题色)
-    type_info = {
-        "Teacher":      ("👨‍🏫", "教师",        "cyan"),
-        "Experimenter": ("🔬", "实验员",      "green"),
-        "Admin":        ("💼", "行政人员",    "magenta"),
-        "TeacherAdmin": ("👨‍💼", "教师兼行政",  "yellow"),
-    }
-    icon, type_name, accent = type_info.get(person_type, ("👤", "未知", "white"))
+    icon, type_name, accent, _, _ = TYPE_META.get(person_type, ("👤", "未知", "white", "", ""))
 
     # ── 第一行：姓名 + 编号 + 类型 ──
     title_line = Text()
@@ -88,9 +78,7 @@ def render_person_detail_modal(person) -> Panel:
     )
 
 
-# ──────────────────────────────────────────────
-# 弹窗 Screen
-# ──────────────────────────────────────────────
+'''弹窗 Screen'''
 
 class PersonDetailScreen(Screen):
     """人员详情弹窗 - 居中小弹窗

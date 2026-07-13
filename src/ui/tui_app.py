@@ -19,6 +19,12 @@ from rich import box
 from src.services import PersonService
 from src.services.config import load_auto_save, save_auto_save
 from src.ui.person_list_page import PersonListPage
+from src.ui.constants import (
+    TYPE_META, STAT_TOTAL, STAT_MALE, STAT_FEMALE,
+    STAT_TEACHER, STAT_EXPERIMENTER, STAT_ADMIN, STAT_TEACHER_ADMIN,
+    BAR_BLOCK_PERCENT, BAR_TOTAL_BLOCKS,
+)
+from src.ui.widgets import RichPanelPage
 
 
 
@@ -41,16 +47,11 @@ MENU_ITEMS = [                      #菜单栏映射
 MENU_GROUPS = ["人员管理", "数据操作"]
 
 
-'''
-辅助函数
-'''
+# ── 辅助函数 ──
 
 def render_welcome_page(service: PersonService, auto_save: bool) -> Panel:
     """渲染欢迎页面板"""
-    stat = service.get_person_statistics() 
-    '''
-    service层统计方法
-    '''
+    stat = service.get_person_statistics()
 
     # 构建统计表格
     table = Table(
@@ -62,14 +63,14 @@ def render_welcome_page(service: PersonService, auto_save: bool) -> Panel:
     table.add_column("label", justify="right", style="bold cyan")
     table.add_column("value", justify="left", style="bold white")
 
-    table.add_row("👥 总人数", f"{stat['总人数']} 人")
-    table.add_row("👨 男员工", f"{stat['男员工']} 人")
-    table.add_row("👩 女员工", f"{stat['女员工']} 人")
+    table.add_row("👥 总人数", f"{stat[STAT_TOTAL]} 人")
+    table.add_row("👨 男员工", f"{stat[STAT_MALE]} 人")
+    table.add_row("👩 女员工", f"{stat[STAT_FEMALE]} 人")
     table.add_row("───", "───")
-    table.add_row("👨‍🏫 教师", f"{stat['教师']} 人")
-    table.add_row("🔬 实验员", f"{stat['实验员']} 人")
-    table.add_row("💼 行政人员", f"{stat['行政人员']} 人")
-    table.add_row("👨‍💼 教师兼行政", f"{stat['教师兼行政人员']} 人")
+    table.add_row("👨‍🏫 教师", f"{stat[STAT_TEACHER]} 人")
+    table.add_row("🔬 实验员", f"{stat[STAT_EXPERIMENTER]} 人")
+    table.add_row("💼 行政人员", f"{stat[STAT_ADMIN]} 人")
+    table.add_row("👨‍💼 教师兼行政", f"{stat[STAT_TEACHER_ADMIN]} 人")
 
     # 构建主面板
     content = Table.grid(expand=True)
@@ -103,7 +104,6 @@ def render_welcome_page(service: PersonService, auto_save: bool) -> Panel:
         padding=(1, 3),
     )
 
-#临时占位，后续删除
 def render_placeholder_page(title: str, icon: str = "🚧") -> Panel:
     """渲染占位页面"""
     content = Table.grid(expand=True)
@@ -132,17 +132,17 @@ def render_statistics_page(service: PersonService) -> Panel:
 
     overview_grid.add_row(
         Panel(
-            Text(f"\n👥 总人数\n\n", style="bold white") + Text(f"    {stat['总人数']}    \n", style="bold gold1 size 10"),
+            Text(f"\n👥 总人数\n\n", style="bold white") + Text(f"    {stat[STAT_TOTAL]}    \n", style="bold gold1 size 10"),
             border_style="blue",
             padding=(1, 1),
         ),
         Panel(
-            Text(f"\n👨 男员工\n\n", style="bold white") + Text(f"    {stat['男员工']}    \n", style="bold cyan"),
+            Text(f"\n👨 男员工\n\n", style="bold white") + Text(f"    {stat[STAT_MALE]}    \n", style="bold cyan"),
             border_style="cyan",
             padding=(1, 1),
         ),
         Panel(
-            Text(f"\n👩 女员工\n\n", style="bold white") + Text(f"    {stat['女员工']}    \n", style="bold magenta"),
+            Text(f"\n👩 女员工\n\n", style="bold white") + Text(f"    {stat[STAT_FEMALE]}    \n", style="bold magenta"),
             border_style="magenta",
             padding=(1, 1),
         ),
@@ -161,16 +161,16 @@ def render_statistics_page(service: PersonService) -> Panel:
     type_table.add_column("人数", justify="right")
     type_table.add_column("占比", justify="right")
 
-    total = stat["总人数"] if stat["总人数"] > 0 else 1
+    total = stat[STAT_TOTAL] if stat[STAT_TOTAL] > 0 else 1
     type_data = [
-        ("👨‍🏫 教师", stat["教师"], "cyan"),
-        ("🔬 实验员", stat["实验员"], "green"),
-        ("💼 行政人员", stat["行政人员"], "magenta"),
-        ("👨‍💼 教师兼行政", stat["教师兼行政人员"], "yellow"),
+        ("👨‍🏫 教师", stat[STAT_TEACHER], "cyan"),
+        ("🔬 实验员", stat[STAT_EXPERIMENTER], "green"),
+        ("💼 行政人员", stat[STAT_ADMIN], "magenta"),
+        ("👨‍💼 教师兼行政", stat[STAT_TEACHER_ADMIN], "yellow"),
     ]
     for name, count, color in type_data:
         pct = count / total * 100
-        bar = "█" * int(pct / 5) + "░" * (20 - int(pct / 5))
+        bar = "█" * int(pct / BAR_BLOCK_PERCENT) + "░" * (BAR_TOTAL_BLOCKS - int(pct / BAR_BLOCK_PERCENT))
         type_table.add_row(
             f"[{color}]{name}[/{color}]",
             f"[bold]{count} 人[/bold]",
@@ -186,7 +186,7 @@ def render_statistics_page(service: PersonService) -> Panel:
     main_content.add_row(overview_grid)
     main_content.add_row(Text("\n"))
     main_content.add_row(type_table)
-    main_content.add_row(Text(f"\n  💡 数据更新于当前会话  |  共 {total} 条记录\n", style="dim"))
+    main_content.add_row(Text(f"\n  💡 数据更新于当前会话  |  共 {stat[STAT_TOTAL]} 条记录\n", style="dim"))
 
     return Panel(
         main_content,
@@ -196,9 +196,7 @@ def render_statistics_page(service: PersonService) -> Panel:
     )
 
 
-'''
-菜单项元组件
-'''
+# ── 菜单项元组件 ──
 
 
 class MenuGroupHeader(Static):
@@ -246,9 +244,8 @@ class MenuItem(ListItem):
         super().__init__(Static(f"{icon}  {label}"))
 
 
-'''
-左侧导航栏 组件
-'''
+# ── 左侧导航栏组件 ──
+
 class Sidebar(Container):
     """左侧导航栏"""
 
@@ -304,9 +301,7 @@ class Sidebar(Container):
                     )
                 )
             items.append(MenuItem(icon, name, i))
-        '''
-        遍历 MENU_ITEMS，遇到新分组就插入一个不可点击的分组标题，再加菜单项
-        '''
+        # 遍历 MENU_ITEMS，遇到新分组就插入一个不可点击的分组标题，再加菜单项
         yield ListView(*items, id="nav-list")
         yield Static("⌨️  ↑↓ 选择 · Enter 确认", id="sidebar-footer")
 
@@ -332,10 +327,7 @@ class MenuSelected(events.Message):
         super().__init__()
 
 
-
-'''
-内容页：welcome页、占位页、Rich Panel页
-'''
+# ── 内容页：welcome页、占位页、Rich Panel页 ──
 
 class WelcomePage(VerticalScroll):
     """欢迎页,显示统计概览"""
@@ -366,9 +358,7 @@ class WelcomePage(VerticalScroll):
         self.mount(Static(panel))
 
 
-# ──────────────────────────────────────────────
-# 内容区 - 占位页
-# ──────────────────────────────────────────────
+# ── 内容区 - 占位页 ──
 
 class PlaceholderPage(VerticalScroll):
     """占位内容页"""
@@ -393,31 +383,7 @@ class PlaceholderPage(VerticalScroll):
         yield Static(panel)
 
 
-class _RichPanelPage(VerticalScroll):
-    """通用 Rich Panel 页面 - 用于展示任意 rich Panel 内容"""
-
-    DEFAULT_CSS = """
-    _RichPanelPage {
-        height: 100%;
-        padding: 1 2;
-    }
-    _RichPanelPage > Static {
-        height: auto;
-    }
-    """
-
-    def __init__(self, panel: Panel):
-        self.panel = panel
-        super().__init__()
-
-    def compose(self) -> ComposeResult:
-        yield Static(self.panel)
-
-
-
-'''
-顶部状态栏
-'''
+# ── 顶部状态栏 ──
 
 class AutoSaveToggled(events.Message):
     """自动保存状态切换消息"""
@@ -480,9 +446,7 @@ class StatusBar(Static):
         btn.variant = "success" if self.auto_save else "warning"
 
 
-# ──────────────────────────────────────────────
-# 主内容区
-# ──────────────────────────────────────────────
+# ── 主内容区 ──
 
 class MainContent(Container):
     """主内容区 - 左右布局"""
@@ -503,7 +467,7 @@ class MainContent(Container):
 
     # 菜单名称 → 页面构造函数的映射
     PAGE_MAP = {
-        "统计人员": lambda svc, auto: _RichPanelPage(render_statistics_page(svc)),
+        "统计人员": lambda svc, auto: RichPanelPage(render_statistics_page(svc)),
         "显示人员": lambda svc, auto: PersonListPage(svc),
     }
 
@@ -520,34 +484,30 @@ class MainContent(Container):
                 id="content-area"
             )
 
+    def _build_page(self, index: int):
+        """根据菜单索引构建页面组件（统一页面构建逻辑）"""
+        if index == -1:
+            return WelcomePage(self.service, self.auto_save)
+        icon, name, _ = MENU_ITEMS[index]
+        builder = self.PAGE_MAP.get(name)
+        return builder(self.service, self.auto_save) if builder else PlaceholderPage(name, icon)
+
     def on_menu_selected(self, event: MenuSelected) -> None:
         """处理菜单选中消息"""
-        index = event.index
         content = self.query_one("#content-area", Vertical)
         content.remove_children()
-
-        if index == -1:
-            page = WelcomePage(self.service, self.auto_save)
-        else:
-            icon, name, _ = MENU_ITEMS[index]       #后续修改统一在MENU_ITEMS菜单修改
-            builder = self.PAGE_MAP.get(name)
-            page = builder(self.service, self.auto_save) if builder else PlaceholderPage(name, icon)
-
-        content.mount(page)
+        content.mount(self._build_page(event.index))
 
     def refresh_welcome(self) -> None:
         """刷新欢迎页数据"""
         content = self.query_one("#content-area", Vertical)
-        # 检查当前是否是欢迎页（通过检查 Sidebar 的 active_index）
         sidebar = self.query_one(Sidebar)
         if sidebar.active_index is None or sidebar.active_index < 0:
             content.remove_children()
             content.mount(WelcomePage(self.service, self.auto_save))
 
 
-# ──────────────────────────────────────────────
-# App 主类
-# ──────────────────────────────────────────────
+# ── App 主类 ──
 
 class PersonTuiApp(App):
     """人员信息管理系统 TUI 应用"""
@@ -600,15 +560,21 @@ class PersonTuiApp(App):
 
     def action_save(self) -> None:
         """手动保存"""
-        self.service.save()
-        self.notify("💾 数据已保存", title="保存成功", severity="information", timeout=2)
-        self._refresh_current_page()
+        try:
+            self.service.save()
+            self.notify("💾 数据已保存", title="保存成功", severity="information", timeout=2)
+            self._refresh_current_page()
+        except Exception as e:
+            self.notify(f"保存失败：{e}", title="错误", severity="error", timeout=3)
 
     def action_reload(self) -> None:
         """重新加载数据"""
-        self.service.load()
-        self.notify("📂 数据已重新加载", title="读取成功", severity="information", timeout=2)
-        self._refresh_current_page()
+        try:
+            self.service.load()
+            self.notify("📂 数据已重新加载", title="读取成功", severity="information", timeout=2)
+            self._refresh_current_page()
+        except Exception as e:
+            self.notify(f"加载失败：{e}", title="错误", severity="error", timeout=3)
 
     def _refresh_current_page(self) -> None:
         """刷新当前页面的数据"""
@@ -616,23 +582,9 @@ class PersonTuiApp(App):
         main_content.auto_save = self.auto_save_on
         sidebar = main_content.query_one(Sidebar)
         content = main_content.query_one("#content-area", Vertical)
-
-        # 如果在欢迎页，刷新欢迎页
-        # 如果在统计页或列表页，也刷新
         active_idx = sidebar.active_index
-        if active_idx is None or active_idx < 0:
-            content.remove_children()
-            content.mount(WelcomePage(self.service, self.auto_save_on))
-            return
-
-        icon, name, _ = MENU_ITEMS[active_idx]
-        if name == "统计人员":
-            content.remove_children()
-            panel = render_statistics_page(self.service)
-            content.mount(_RichPanelPage(panel))
-        elif name == "显示人员":
-            content.remove_children()
-            content.mount(PersonListPage(self.service))
+        content.remove_children()
+        content.mount(main_content._build_page(active_idx))
 
     def action_quit(self) -> None:
         """退出应用"""

@@ -15,18 +15,7 @@ from rich import box
 
 from src.services import PersonService
 from src.ui.person_detail_page import PersonDetailScreen
-
-
-# ──────────────────────────────────────────────
-# 类型信息映射
-# ──────────────────────────────────────────────
-
-TYPE_INFO = {
-    "Teacher":      ("👨‍🏫", "教师",       "cyan",    "--teacher"),
-    "Experimenter": ("🔬", "实验员",     "green",   "--experimenter"),
-    "Admin":        ("💼", "行政人员",   "magenta", "--admin"),
-    "TeacherAdmin": ("👨‍💼", "教师兼行政", "yellow",  "--teacher-admin"),
-}
+from src.ui.constants import TYPE_META, COL_WIDTH_SEQ, COL_WIDTH_ID, COL_WIDTH_NAME
 
 
 def _build_row_text(person, index: int) -> Text:
@@ -35,8 +24,8 @@ def _build_row_text(person, index: int) -> Text:
     从左到右：序号 | 编号 | 姓名 | 性别年龄 | 类型标签 | 副信息
     """
     person_type = type(person).__name__
-    icon, type_name, color, _ = TYPE_INFO.get(
-        person_type, ("👤", "未知", "white", "")
+    icon, type_name, color, _, _ = TYPE_META.get(
+        person_type, ("👤", "未知", "white", "", "")
     )
 
     # 性别图标 + 颜色
@@ -61,9 +50,9 @@ def _build_row_text(person, index: int) -> Text:
 
     # 组装
     line = Text()
-    line.append(f"#{index:<3d} ", style="dim")                     # 序号
-    line.append(f"{person._person_id:<8s} ", style="dim cyan")      # 编号
-    line.append(f"{person._person_name:<6s} ", style="bold white")  # 姓名
+    line.append(f"#{index:<{COL_WIDTH_SEQ}d} ", style="dim")                     # 序号
+    line.append(f"{person._person_id:<{COL_WIDTH_ID}s} ", style="dim cyan")      # 编号
+    line.append(f"{person._person_name:<{COL_WIDTH_NAME}s} ", style="bold white")  # 姓名
     line.append(f"{gender_text:<10s} ", style=gender_style)         # 性别+年龄
     line.append(f"[{type_name}]", style=f"bold {color}")            # 类型标签
     if sub_info:
@@ -116,9 +105,7 @@ def _build_header_panel(service: PersonService) -> Panel:
     )
 
 
-# ──────────────────────────────────────────────
-# 自定义行组件
-# ──────────────────────────────────────────────
+'''自定义行组件'''
 
 class PersonListItem(ListItem):
     """人员列表行 - 绑定 person 对象，带类型色条"""
@@ -178,8 +165,8 @@ class PersonListItem(ListItem):
         super().__init__()
 
         # 添加类型 CSS 类
-        _, _, _, css_class = TYPE_INFO.get(
-            self.person_type, ("", "", "", "")
+        _, _, _, css_class, _ = TYPE_META.get(
+            self.person_type, ("", "", "", "", "")
         )
         if css_class:
             self.add_class(css_class)
@@ -191,9 +178,7 @@ class PersonListItem(ListItem):
         yield Static(self.row_text)
 
 
-# ──────────────────────────────────────────────
-# 主页面组件
-# ──────────────────────────────────────────────
+'''主页面组件'''
 
 class PersonListPage(VerticalScroll):
     """精美的可点击人员列表页面
