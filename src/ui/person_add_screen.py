@@ -150,11 +150,12 @@ class PersonAddScreen(Screen):
                     )
 
                 with Vertical(classes="field-group"):
-                    yield Label("性别（男/女）", classes="field-label")
-                    yield Input(
-                        placeholder="性别",
+                    yield Label("性别", classes="field-label")
+                    yield Select(
+                        options=[("男", "男"), ("女", "女")],
+                        prompt="请选择性别",
+                        id="input-gender",
                         classes="field-input",
-                        id="input-gender"
                     )
 
                 with Vertical(classes="field-group"):
@@ -164,11 +165,6 @@ class PersonAddScreen(Screen):
                         classes="field-input",
                         id="input-age"
                     )
-
-                # 特有字段容器（根据选择类型动态生成）
-                with Vertical(id="extra-fields"):
-                    pass
-
             with Horizontal(id="edit-buttons"):
                 yield Button("✓ 保存", variant="success", id="btn-save")
                 yield Button("✕ 取消", variant="default", id="btn-cancel")
@@ -177,6 +173,8 @@ class PersonAddScreen(Screen):
         """挂载后设置默认选中值并初始化额外字段"""
         select = self.query_one("#select-type", Select)
         select.value = "Teacher"
+        gender_select = self.query_one("#input-gender", Select)
+        gender_select.value = "男"
         self._rebuild_extra_fields()
 
     def on_select_changed(self, event: Select.Changed) -> None:
@@ -186,16 +184,18 @@ class PersonAddScreen(Screen):
             self._rebuild_extra_fields()
 
     def _rebuild_extra_fields(self) -> None:
-        """根据当前选中的类型重建额外字段"""
-        container = self.query_one("#extra-fields", Vertical)
-        container.remove_children()
+        """根据当前选中的类型重建额外字段，直接挂载到 #edit-form 末尾"""
+        form = self.query_one("#edit-form", Vertical)
+
+        # 批量移除旧的特有字段组（通过 CSS class 选择器）
+        form.remove_children(".extra-field")
 
         person_class = CLASS_MAP.get(self.selected_type)
         if not person_class:
             return
 
         for field_key, field_prompt in person_class.get_fields():
-            container.mount(
+            form.mount(
                 Vertical(
                     Label(field_prompt, classes="field-label"),
                     Input(
@@ -203,16 +203,17 @@ class PersonAddScreen(Screen):
                         classes="field-input",
                         id=f"input-{field_key}"
                     ),
-                    classes="field-group"
+                    classes="field-group extra-field",
                 )
             )
 
     def _collect_data(self) -> dict:
         """收集表单数据（返回驼峰格式，供验证用）"""
+        gender_val = self.query_one("#input-gender", Select).value
         data = {
             "personID": self.query_one("#input-id", Input).value.strip(),
             "personName": self.query_one("#input-name", Input).value.strip(),
-            "personGender": self.query_one("#input-gender", Input).value.strip(),
+            "personGender": gender_val if gender_val != Select.BLANK else "",
             "personAge": self.query_one("#input-age", Input).value.strip(),
         }
         # 收集特有字段（驼峰格式）

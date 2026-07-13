@@ -6,7 +6,7 @@
 """
 import re
 from textual.app import ComposeResult, Screen
-from textual.widgets import Static, Button, Input, Label
+from textual.widgets import Static, Button, Input, Label, Select
 from textual.containers import Container, Vertical, Horizontal
 from textual.message import Message
 
@@ -139,12 +139,13 @@ class PersonEditScreen(Screen):
                     )
 
                 with Vertical(classes="field-group"):
-                    yield Label("性别（男/女）", classes="field-label")
-                    yield Input(
+                    yield Label("性别", classes="field-label")
+                    yield Select(
+                        options=[("男", "男"), ("女", "女")],
+                        prompt="请选择性别",
                         value=self.person._person_gender,
-                        placeholder="性别",
+                        id="input-gender",
                         classes="field-input",
-                        id="input-gender"
                     )
 
                 with Vertical(classes="field-group"):
@@ -179,7 +180,7 @@ class PersonEditScreen(Screen):
         data = {
             "personID": self.query_one("#input-id", Input).value.strip(),
             "personName": self.query_one("#input-name", Input).value.strip(),
-            "personGender": self.query_one("#input-gender", Input).value.strip(),
+            "personGender": self.query_one("#input-gender", Select).value,
             "personAge": self.query_one("#input-age", Input).value.strip(),
         }
         # 收集特有字段（驼峰格式）

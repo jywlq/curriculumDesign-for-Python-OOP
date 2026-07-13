@@ -29,6 +29,7 @@ from src.ui.widgets import RichPanelPage
 from src.services.csv_export import DataExporter
 from src.services.csv_import import DataImporter
 from src.ui.person_add_screen import PersonAddScreen
+from src.ui.csv_import_screen import CsvImportScreen
 
 
 
@@ -106,21 +107,6 @@ def render_welcome_page(service: PersonService, auto_save: bool) -> Panel:
         content,
         border_style="blue",
         padding=(1, 3),
-    )
-
-def render_placeholder_page(title: str, icon: str = "🚧") -> Panel:
-    """渲染占位页面"""
-    content = Table.grid(expand=True)
-    content.add_column(justify="center")
-
-    content.add_row(Text(f"\n\n{icon}  {title}\n", style="bold magenta"))
-    content.add_row(Text("功能开发中...\n\n", style="dim"))
-
-    return Panel(
-        content,
-        title=f"{icon} {title}",
-        border_style="magenta",
-        padding=(1, 2),
     )
 
 
@@ -441,7 +427,7 @@ class MainContent(Container):
             return RichPanelPage(render_welcome_page(self.service, self.auto_save))
         icon, name, _ = MENU_ITEMS[index]
         builder = self.PAGE_MAP.get(name)
-        return builder(self.service, self.auto_save) if builder else RichPanelPage(render_placeholder_page(name, icon))
+        return builder(self.service, self.auto_save) if builder else RichPanelPage(render_welcome_page(self.service, self.auto_save))
 
     def on_menu_selected(self, event: MenuSelected) -> None:
         """处理菜单选中消息"""
@@ -482,20 +468,7 @@ class MainContent(Container):
                 self.app.notify(f"导出失败：{e}", title="错误", severity="error", timeout=3)
             return
         elif name == "导入 CSV":
-            try:
-                new_persons, skipped = DataImporter.import_csv()
-                if new_persons:
-                    for p in new_persons:
-                        self.service.add_person(p)
-                msg = f"📥 成功导入 {len(new_persons)} 条记录"
-                if skipped > 0:
-                    msg += f"，跳过 {skipped} 条"
-                self.app.notify(msg, title="导入完成", severity="information", timeout=3)
-                self._refresh_current_page()
-            except FileNotFoundError:
-                self.app.notify("找不到 data/person.csv 文件", title="导入失败", severity="error", timeout=3)
-            except Exception as e:
-                self.app.notify(f"导入失败：{e}", title="错误", severity="error", timeout=3)
+            self.app.push_screen(CsvImportScreen(self.service, on_done=self._refresh_current_page))
             return
 
         # 其他菜单项：正常切换页面
@@ -516,6 +489,11 @@ class MainContent(Container):
         sidebar = self.query_one(Sidebar)
         content = self.query_one("#content-area", Vertical)
         active_idx = sidebar.active_index
+
+        # 操作类菜单项（索引 6-9）没有对应页面，不重建
+        if active_idx is None or 6 <= active_idx <= 9:
+            return
+
         content.remove_children()
         content.mount(self._build_page(active_idx))
 
@@ -596,6 +574,9 @@ class PersonTuiApp(App):
         sidebar = main_content.query_one(Sidebar)
         content = main_content.query_one("#content-area", Vertical)
         active_idx = sidebar.active_index
+        # 操作类菜单项（索引 6-9）没有对应页面，不重建
+        if active_idx is not None and 6 <= active_idx <= 9:
+            return
         content.remove_children()
         content.mount(main_content._build_page(active_idx))
 
