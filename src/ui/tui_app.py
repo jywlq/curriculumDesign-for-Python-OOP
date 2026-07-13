@@ -20,22 +20,21 @@ from src.services import PersonService
 import json
 
 
-# ──────────────────────────────────────────────
-# 常量定义
-# ──────────────────────────────────────────────
+
+#文件常量定义
 
 CONFIG_FILE = 'data/config.json'
 
 # 菜单项配置：(图标, 名称, 分组)
-MENU_ITEMS = [
-    # ── 人员管理 ──
+MENU_ITEMS = [                      #菜单栏映射
+    # 人员管理
     ("➕", "添加人员", "人员管理"),
     ("🔍", "查询人员", "人员管理"),
     ("📋", "显示人员", "人员管理"),
     ("✏️ ", "修改人员", "人员管理"),
     ("🗑️ ", "删除人员", "人员管理"),
     ("📊", "统计人员", "人员管理"),
-    # ── 数据操作 ──
+    # 数据操作
     ("💾", "手动保存", "数据操作"),
     ("📂", "读取数据", "数据操作"),
     ("📤", "导出 CSV", "数据操作"),
@@ -45,13 +44,16 @@ MENU_ITEMS = [
 MENU_GROUPS = ["人员管理", "数据操作"]
 
 
-# ──────────────────────────────────────────────
-# 辅助函数
-# ──────────────────────────────────────────────
+'''
+辅助函数
+'''
 
 def render_welcome_page(service: PersonService, auto_save: bool) -> Panel:
-    """使用 rich 渲染欢迎页面板"""
-    stat = service.get_person_statistics()
+    """渲染欢迎页面板"""
+    stat = service.get_person_statistics() 
+    '''
+    service层统计方法
+    '''
 
     # 构建统计表格
     table = Table(
@@ -77,7 +79,7 @@ def render_welcome_page(service: PersonService, auto_save: bool) -> Panel:
     content.add_column(justify="center")
 
     title_text = Text("\n✨ 欢迎使用人员信息管理系统 ✨\n", style="bold gold1")
-    subtitle_text = Text("Python 面向对象课程设计 · TUI 版本\n\n", style="italic dim")
+    subtitle_text = Text("TUI版界面\n\n25计科(创)李鑫杰\n\n", style="italic dim")
     content.add_row(title_text)
     content.add_row(subtitle_text)
 
@@ -104,7 +106,7 @@ def render_welcome_page(service: PersonService, auto_save: bool) -> Panel:
         padding=(1, 3),
     )
 
-
+#临时占位，后续删除
 def render_placeholder_page(title: str, icon: str = "🚧") -> Panel:
     """渲染占位页面"""
     content = Table.grid(expand=True)
@@ -122,7 +124,7 @@ def render_placeholder_page(title: str, icon: str = "🚧") -> Panel:
 
 
 def render_statistics_page(service: PersonService) -> Panel:
-    """渲染统计人员页面 - 精美的统计卡片"""
+    """渲染统计人员页面,统计卡片"""
     stat = service.get_person_statistics()
 
     # 总览卡片（横向排列的统计数字）
@@ -248,9 +250,10 @@ def render_person_list_page(service: PersonService) -> Panel:
     )
 
 
-# ──────────────────────────────────────────────
-# 菜单项组件
-# ──────────────────────────────────────────────
+'''
+菜单项元组件
+'''
+
 
 class MenuGroupHeader(Static):
     """菜单分组标题"""
@@ -297,10 +300,9 @@ class MenuItem(ListItem):
         super().__init__(Static(f"{icon}  {label}"))
 
 
-# ──────────────────────────────────────────────
-# 左侧导航栏
-# ──────────────────────────────────────────────
-
+'''
+左侧导航栏 组件
+'''
 class Sidebar(Container):
     """左侧导航栏"""
 
@@ -342,7 +344,7 @@ class Sidebar(Container):
     def compose(self) -> ComposeResult:
         yield Static("📁 功能菜单", id="sidebar-title")
 
-        # 构建菜单项：先加 Welcome，再按分组加其他项
+        # 构建菜单项：单独加载welcome页面，然后分组加载其他页面
         items = [MenuItem("🏠", "Welcome!", -1)]
 
         current_group = None
@@ -356,7 +358,9 @@ class Sidebar(Container):
                     )
                 )
             items.append(MenuItem(icon, name, i))
-
+        '''
+        遍历 MENU_ITEMS，遇到新分组就插入一个不可点击的分组标题，再加菜单项
+        '''
         yield ListView(*items, id="nav-list")
         yield Static("⌨️  ↑↓ 选择 · Enter 确认", id="sidebar-footer")
 
@@ -382,12 +386,13 @@ class MenuSelected(events.Message):
         super().__init__()
 
 
-# ──────────────────────────────────────────────
-# 内容区 - 欢迎页
-# ──────────────────────────────────────────────
+
+'''
+内容页：welcome页、占位页、Rich Panel页
+'''
 
 class WelcomePage(VerticalScroll):
-    """欢迎页 - 显示统计概览"""
+    """欢迎页,显示统计概览"""
 
     DEFAULT_CSS = """
     WelcomePage {
@@ -463,9 +468,10 @@ class _RichPanelPage(VerticalScroll):
         yield Static(self.panel)
 
 
-# ──────────────────────────────────────────────
-# 顶部状态栏
-# ──────────────────────────────────────────────
+
+'''
+顶部状态栏
+'''
 
 class AutoSaveToggled(events.Message):
     """自动保存状态切换消息"""
@@ -549,6 +555,12 @@ class MainContent(Container):
     }
     """
 
+    # 菜单名称 → 页面构造函数的映射
+    PAGE_MAP = {
+        "统计人员": lambda svc, auto: _RichPanelPage(render_statistics_page(svc)),
+        "显示人员": lambda svc, auto: _RichPanelPage(render_person_list_page(svc)),
+    }
+
     def __init__(self, service: PersonService, auto_save: bool):
         self.service = service
         self.auto_save = auto_save
@@ -568,23 +580,12 @@ class MainContent(Container):
         content = self.query_one("#content-area", Vertical)
         content.remove_children()
 
-        # Welcome 页面
         if index == -1:
             page = WelcomePage(self.service, self.auto_save)
-            content.mount(page)
-            return
-
-        icon, name, _ = MENU_ITEMS[index]
-
-        # 特殊页面：显示真实数据
-        if name == "统计人员":
-            panel = render_statistics_page(self.service)
-            page = _RichPanelPage(panel)
-        elif name == "显示人员":
-            panel = render_person_list_page(self.service)
-            page = _RichPanelPage(panel)
         else:
-            page = PlaceholderPage(name, icon)
+            icon, name, _ = MENU_ITEMS[index]       #后续修改统一在MENU_ITEMS菜单修改
+            builder = self.PAGE_MAP.get(name)
+            page = builder(self.service, self.auto_save) if builder else PlaceholderPage(name, icon)
 
         content.mount(page)
 
