@@ -6,7 +6,7 @@ TUI 界面模块 - 基于 Textual 的终端用户界面
 """
 from textual.app import App, ComposeResult
 from textual.widgets import (
-    Footer, Static, ListItem, ListView, Label, Button
+    Footer, Static, ListItem, ListView, Label, Button, DataTable
 )
 from textual.containers import Container, Horizontal, Vertical, VerticalScroll
 from textual.reactive import reactive
@@ -18,6 +18,7 @@ from rich import box
 
 from src.services import PersonService
 from src.services.config import load_auto_save, save_auto_save
+from src.ui.person_list_page import PersonListPage
 
 
 
@@ -191,57 +192,6 @@ def render_statistics_page(service: PersonService) -> Panel:
         main_content,
         title="📊 人员统计",
         border_style="cyan",
-        padding=(1, 2),
-    )
-
-
-def render_person_list_page(service: PersonService) -> Panel:
-    """渲染显示人员页面 - 人员列表表格"""
-    persons = service.person_list
-
-    # 人员列表表格
-    table = Table(
-        title=f"📋 所有人员列表（共 {len(persons)} 人）",
-        expand=True,
-        box=box.ROUNDED,
-        padding=(0, 1),
-        header_style="bold cyan",
-        border_style="cyan",
-        row_styles=["none", "dim"],
-    )
-    table.add_column("序号", justify="right", style="dim", width=6)
-    table.add_column("编号", style="bold")
-    table.add_column("姓名")
-    table.add_column("性别", justify="center")
-    table.add_column("年龄", justify="right")
-    table.add_column("类型", style="italic")
-
-    type_map = {
-        "Teacher": "教师",
-        "Experimenter": "实验员",
-        "Admin": "行政人员",
-        "TeacherAdmin": "教师兼行政",
-    }
-
-    for i, p in enumerate(persons, 1):
-        type_name = type_map.get(p.__class__.__name__, p.__class__.__name__)
-        gender_icon = "♂" if p._person_gender == "男" else "♀"
-        table.add_row(
-            str(i),
-            p._person_id,
-            p._person_name,
-            f"{gender_icon} {p._person_gender}",
-            str(p._person_age),
-            type_name,
-        )
-
-    if not persons:
-        table.add_row("—", "—", "暂无数据", "—", "—", "—")
-
-    return Panel(
-        table,
-        title="📋 显示人员",
-        border_style="green",
         padding=(1, 2),
     )
 
@@ -554,7 +504,7 @@ class MainContent(Container):
     # 菜单名称 → 页面构造函数的映射
     PAGE_MAP = {
         "统计人员": lambda svc, auto: _RichPanelPage(render_statistics_page(svc)),
-        "显示人员": lambda svc, auto: _RichPanelPage(render_person_list_page(svc)),
+        "显示人员": lambda svc, auto: PersonListPage(svc),
     }
 
     def __init__(self, service: PersonService, auto_save: bool):
@@ -682,8 +632,7 @@ class PersonTuiApp(App):
             content.mount(_RichPanelPage(panel))
         elif name == "显示人员":
             content.remove_children()
-            panel = render_person_list_page(self.service)
-            content.mount(_RichPanelPage(panel))
+            content.mount(PersonListPage(self.service))
 
     def action_quit(self) -> None:
         """退出应用"""

@@ -1,161 +1,147 @@
 """
-人员详情页面组件
+人员详情弹窗组件
 
-独立的 PersonDetailPage 组件，用于显示单个人员的详细信息。
-使用 rich 的 Panel + Table 渲染，继承 VerticalScroll 支持滚动。
+简洁的居中弹窗，点击列表行时弹出显示人员核心信息。
+继承 Screen，支持 Enter / Escape 关闭，也可点击返回按钮关闭。
 """
-from textual.app import ComposeResult
-from textual.widgets import Static, Button
-from textual.containers import Container, VerticalScroll
+from textual.app import ComposeResult, Screen
+from textual.widgets import Static, Button, Label
+from textual.containers import Container, Vertical, Horizontal
 from rich.text import Text
 from rich.panel import Panel
 from rich.table import Table
 from rich import box
 
 
-def render_person_detail_page(person) -> Panel:
-    """渲染人员详情页面板
+# ──────────────────────────────────────────────
+# 辅助函数：构建详情内容的 rich Panel
+# ──────────────────────────────────────────────
 
-    Args:
-        person: 人员对象（Teacher / Experimenter / Admin / TeacherAdmin）
+def render_person_detail_modal(person) -> Panel:
+    """渲染人员详情弹窗的内容面板（紧凑一行式）
 
-    Returns:
-        rich Panel 对象
+    布局：
+    ┌─────────────────────────────────────┐
+    │  👨‍🏫 张三（T001）  教师              │
+    ├─────────────────────────────────────┤
+    │  男 | 30岁 | 计算机系 | 软件工程     │
+    └─────────────────────────────────────┘
     """
     person_type = type(person).__name__
 
-    # 类型名称、图标、主题色映射
+    # 类型 → (图标, 中文名, 主题色)
     type_info = {
         "Teacher":      ("👨‍🏫", "教师",        "cyan"),
         "Experimenter": ("🔬", "实验员",      "green"),
         "Admin":        ("💼", "行政人员",    "magenta"),
         "TeacherAdmin": ("👨‍💼", "教师兼行政",  "yellow"),
     }
-    icon, type_name, accent_color = type_info.get(person_type, ("👤", "未知", "white"))
+    icon, type_name, accent = type_info.get(person_type, ("👤", "未知", "white"))
 
-    # 性别图标
+    # ── 第一行：姓名 + 编号 + 类型 ──
+    title_line = Text()
+    title_line.append(f"  {icon}  ", style=f"bold {accent}")
+    title_line.append(person._person_name, style="bold white")
+    title_line.append(f"（{person._person_id}）", style="dim")
+    title_line.append("  ")
+    title_line.append(type_name, style=f"bold {accent}")
+
+    # ── 第二行：核心字段，用 | 分隔 ──
+    info_parts = []
+
+    # 性别 + 年龄（公共）
     gender_icon = "♂ 男" if person._person_gender == "男" else "♀ 女"
+    info_parts.append(gender_icon)
+    info_parts.append(f"{person._person_age} 岁")
 
-    # ── 顶部信息卡片（姓名 + 编号 + 类型标签）──
-    header_grid = Table.grid(expand=True)
-    header_grid.add_column(justify="left", ratio=2)
-    header_grid.add_column(justify="right", ratio=1)
+    # 特有字段（根据类型）
+    if person_type == "Teacher":
+        info_parts.append(person._department)
+        info_parts.append(person._major)
+        info_parts.append(person._professional_title)
+    elif person_type == "Experimenter":
+        info_parts.append(person._laboratory)
+        info_parts.append(person._duties)
+    elif person_type == "Admin":
+        info_parts.append(person._political_affiliation)
+        info_parts.append(person._professional_title)
+    elif person_type == "TeacherAdmin":
+        info_parts.append(person._department)
+        info_parts.append(person._major)
+        info_parts.append(person._professional_title)
+        info_parts.append(person._political_affiliation)
 
-    name_line = Text(f"\n  {icon}  {person._person_name}\n", style=f"bold {accent_color} size 5")
-    id_line = Text(f"  编号：{person._person_id}    |    {type_name}\n", style="dim")
-    header_grid.add_row(name_line + id_line, Text(""))
+    info_line = Text("  " + "  |  ".join(info_parts) + "  ", style="white")
 
-    header_panel = Panel(
-        header_grid,
-        border_style=accent_color,
-        padding=(0, 1),
-    )
-
-    # ── 公共字段表格 ──
-    common_table = Table(
-        show_header=False,
-        expand=True,
-        box=box.SIMPLE_HEAVY,
-        padding=(0, 2),
-    )
-    common_table.add_column("label", justify="right", style="bold cyan", width=12)
-    common_table.add_column("value", justify="left", style="white")
-
-    common_table.add_row("姓    名", person._person_name)
-    common_table.add_row("编    号", person._person_id)
-    common_table.add_row("性    别", gender_icon)
-    common_table.add_row("年    龄", f"{person._person_age} 岁")
-
-    common_panel = Panel(
-        common_table,
-        title="📌 基本信息",
-        border_style="cyan",
-        padding=(1, 1),
-    )
-
-    # ── 特有字段表格（根据类型动态生成）──
-    extra_table = Table(
-        show_header=False,
-        expand=True,
-        box=box.SIMPLE_HEAVY,
-        padding=(0, 2),
-    )
-    extra_table.add_column("label", justify="right", style=f"bold {accent_color}", width=12)
-    extra_table.add_column("value", justify="left", style="white")
-
-    if person_type in ("Teacher", "TeacherAdmin"):
-        extra_table.add_row("所在系部", person._department)
-        extra_table.add_row("专    业", person._major)
-        extra_table.add_row("职    称", person._professional_title)
-
-    if person_type == "Experimenter":
-        extra_table.add_row("所在实验室", person._laboratory)
-        extra_table.add_row("职    务", person._duties)
-
-    if person_type in ("Admin", "TeacherAdmin"):
-        if person_type == "Admin":
-            extra_table.add_row("政治面貌", person._political_affiliation)
-            extra_table.add_row("职    称", person._professional_title)
-        else:
-            # TeacherAdmin 的职称已在教师部分显示，这里只加政治面貌
-            extra_table.add_row("政治面貌", person._political_affiliation)
-
-    extra_title = "🏷️  教师信息" if person_type == "Teacher" else \
-                  "🏷️  实验员信息" if person_type == "Experimenter" else \
-                  "🏷️  行政信息" if person_type == "Admin" else \
-                  "🏷️  教师兼行政信息"
-
-    extra_panel = Panel(
-        extra_table,
-        title=extra_title,
-        border_style=accent_color,
-        padding=(1, 1),
-    )
-
-    # ── 组合主面板 ──
-    main_content = Table.grid(expand=True)
-    main_content.add_column()
-
-    main_content.add_row(Text(""))
-    main_content.add_row(header_panel)
-    main_content.add_row(Text("\n"))
-    main_content.add_row(common_panel)
-    main_content.add_row(Text("\n"))
-    main_content.add_row(extra_panel)
-    main_content.add_row(Text(""))
+    # ── 组装 ──
+    grid = Table.grid(expand=True)
+    grid.add_column()
+    grid.add_row(title_line)
+    grid.add_row(Text("  " + "─" * 40, style=accent + " 50%"))
+    grid.add_row(info_line)
 
     return Panel(
-        main_content,
-        title=f"{icon} 人员详情",
-        border_style=accent_color,
-        padding=(1, 2),
+        grid,
+        border_style=accent,
+        padding=(1, 0),
+        box=box.ROUNDED,
     )
 
 
-class PersonDetailPage(VerticalScroll):
-    """人员详情页 - 显示单个人员的详细信息
+# ──────────────────────────────────────────────
+# 弹窗 Screen
+# ──────────────────────────────────────────────
+
+class PersonDetailScreen(Screen):
+    """人员详情弹窗 - 居中小弹窗
 
     用法：
-        page = PersonDetailPage(person)
-        # 底部有一个返回按钮，id 为 detail-back-btn 内的按钮
+        app.push_screen(PersonDetailScreen(person))
+
+    关闭方式：
+        - 点击「返回」按钮
+        - 按 Enter
+        - 按 Escape
     """
 
+    BINDINGS = [
+        ("enter", "close", "关闭"),
+        ("escape", "close", "关闭"),
+    ]
+
     DEFAULT_CSS = """
-    PersonDetailPage {
-        height: 100%;
-        padding: 1 2;
+    PersonDetailScreen {
+        align: center middle;
+        background: black 30%;
     }
-    PersonDetailPage > Static {
+
+    #modal-container {
+        width: 50%;
+        min-width: 50;
+        height: auto;
+        background: $surface;
+        border: round $primary;
+        padding: 0;
+    }
+
+    #modal-content {
+        height: auto;
+        padding: 0;
+    }
+    #modal-content > Static {
         height: auto;
     }
-    PersonDetailPage > #detail-back-btn {
-        margin-top: 1;
-        width: 100%;
-        height: 3;
+
+    #modal-footer {
+        height: 4;
+        padding: 0 2;
+        background: $surface-darken-1;
+        border-top: solid $primary 20%;
         align: center middle;
     }
-    PersonDetailPage > #detail-back-btn > Button {
-        width: 20;
+
+    #close-btn {
+        width: 16;
     }
     """
 
@@ -164,7 +150,17 @@ class PersonDetailPage(VerticalScroll):
         super().__init__()
 
     def compose(self) -> ComposeResult:
-        panel = render_person_detail_page(self.person)
-        yield Static(panel)
-        with Container(id="detail-back-btn"):
-            yield Button("← 返回列表", variant="primary")
+        with Container(id="modal-container"):
+            with Vertical(id="modal-content"):
+                yield Static(render_person_detail_modal(self.person))
+            with Horizontal(id="modal-footer"):
+                yield Button("✓ 返回", variant="primary", id="close-btn")
+
+    def action_close(self) -> None:
+        """关闭弹窗"""
+        self.app.pop_screen()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """点击按钮关闭"""
+        if event.button.id == "close-btn":
+            self.app.pop_screen()
