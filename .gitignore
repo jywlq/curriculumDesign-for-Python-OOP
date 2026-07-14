@@ -44,9 +44,10 @@ Thumbs.db
 htmlcov/
 
 #AI
-.mimocode
+.mimocode/
+.trae/
 AGENTS.md
-.trae
+.uploads/
 
 #git
 .gitignore
