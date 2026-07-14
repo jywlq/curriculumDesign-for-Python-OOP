@@ -38,7 +38,7 @@ class BaseClass:
     @classmethod
     def from_dict(cls, d: dict) -> 'BaseClass':
         """从字典反序列化"""
-        return cls(d['personID'], d['personName'], d['personGender'], d['personAge'])
+        return cls(d['personID'], d['personName'], d['personGender'], str(d['personAge']))
 
     def to_dict(self) -> dict:
         """序列化为字典，__class__ 字段用于反序列化时还原类型"""

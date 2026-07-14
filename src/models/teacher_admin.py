@@ -38,7 +38,7 @@ class TeacherAdmin(Teacher, Admin):
 
     @classmethod
     def from_dict(cls, d: dict):
-        return cls(d['personID'], d['personName'], d['personGender'], d['personAge'],
+        return cls(d['personID'], d['personName'], d['personGender'], str(d['personAge']),
                    d.get('department', ''), d.get('major', ''), d.get('professionalTitle', ''), d.get('politicalAffiliation', ''))
 
     def to_dict(self):

@@ -26,7 +26,7 @@ class Admin(BaseClass):
 
     @classmethod
     def from_dict(cls, d: dict):
-        return cls(d['personID'], d['personName'], d['personGender'], d['personAge'],
+        return cls(d['personID'], d['personName'], d['personGender'], str(d['personAge']),
                    d.get('politicalAffiliation', ''), d.get('professionalTitle', ''))
 
     def to_dict(self):

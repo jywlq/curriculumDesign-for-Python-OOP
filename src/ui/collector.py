@@ -96,12 +96,13 @@ class PersonCollector:
             try:
                 age = int(age_str)
                 if 1 <= age <= 150:
+                    age_str = str(age)  # 统一存为字符串，与 BaseClass 类型注解一致
                     break
                 else:
                     print("年龄必须在 1-150 之间")
             except ValueError:
                 print("年龄必须是一个整数")
-        return {"personID": id, "personName": name, "personGender": gender, "personAge": age}
+        return {"personID": id, "personName": name, "personGender": gender, "personAge": age_str}
 
     def collect_extra_fields(self, person_class):
         """
