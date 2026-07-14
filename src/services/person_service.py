@@ -42,14 +42,18 @@ class PersonService:
         
         无参数时返回全部人员的副本，有参数时按编号/姓名前缀筛选。
         返回副本避免外部修改影响内部数据。
+        按 _person_id 去重，防止数据源有重复时返回重复条目。
         """
         if not person_id and not person_name:
             return self.person_list.copy()
         result = []
+        seen = set()
         for p in self.person_list:
             if p._person_id.startswith(person_id) and p._person_name.startswith(person_name):
-                result.append(p)
-        return result.copy()
+                if p._person_id not in seen:
+                    seen.add(p._person_id)
+                    result.append(p)
+        return result
 
     def update_person(self, person_id: str, person) -> bool:
         """
@@ -113,6 +117,7 @@ class PersonService:
         从 JSON 文件加载人员数据
         
         通过 __class__ 字段和 class_map 映射还原为对应的类型对象。
+        按 person_id 去重，保留首次出现的记录，去除重复数据。
         """
         # 类名到类对象的映射
         class_map = {c.__name__: c for c in [Teacher, Experimenter, Admin, TeacherAdmin]}
@@ -120,9 +125,13 @@ class PersonService:
             with open(filename, 'r', encoding='utf-8') as f:
                 data_list = json.load(f)
             self.person_list.clear()
+            seen = set()
             for d in data_list:
                 cls = class_map.get(d.get('__class__'), Teacher)
-                self.person_list.append(cls.from_dict(d))
+                person = cls.from_dict(d)
+                if person._person_id not in seen:
+                    seen.add(person._person_id)
+                    self.person_list.append(person)
         except (FileNotFoundError, json.JSONDecodeError):
             pass
 
