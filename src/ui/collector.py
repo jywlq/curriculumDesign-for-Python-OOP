@@ -18,10 +18,10 @@ class PersonCollector:
         "2": Experimenter,
         "3": Admin,
         "4": TeacherAdmin,
-        "老师": Teacher,
+        "教师": Teacher,
         "实验员": Experimenter,
         "行政人员": Admin,
-        "老师兼行政人员": TeacherAdmin
+        "教师兼行政人员": TeacherAdmin
     }
 
     def __init__(self, service):
@@ -30,7 +30,7 @@ class PersonCollector:
     def select_type(self):
         """选择人员类型，返回对应的类对象"""
         while True:
-            person_type = input("请输入人员类型或序号(1.老师/2.实验员/3.行政人员/4.老师兼行政人员)：")
+            person_type = input("请输入人员类型或序号(1.教师/2.实验员/3.行政人员/4.教师兼行政人员)：")
             if person_type == '0':
                 raise ReturnBack()
             if not person_type.strip():

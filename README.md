@@ -107,6 +107,7 @@ BaseClass（基类）
 │           ├── person_filter_page.py# 人员筛选页
 │           ├── person_edit_screen.py# 人员编辑弹窗
 │           ├── person_add_screen.py # 人员添加弹窗
+│           ├── person_form_screen.py# 人员表单基类（Add/Edit 继承）
 │           ├── person_delete_confirm.py # 删除确认弹窗
 │           └── csv_import_screen.py # CSV 导入引导页
 ├── data/

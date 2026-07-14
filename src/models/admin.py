@@ -19,13 +19,15 @@ class Admin(BaseClass):
         return [("politicalAffiliation", "政治面貌"), ("professionalTitle", "职称")]
 
     def get_display_fields(self, brief: bool = False) -> list:
-        """返回用于展示的特有字段值"""
+        """返回展示字段，brief=True 时返回简要信息"""
+        if brief:
+            return [self._professional_title]
         return [self._political_affiliation, self._professional_title]
 
     @classmethod
     def from_dict(cls, d: dict):
         return cls(d['personID'], d['personName'], d['personGender'], d['personAge'],
-                   d['politicalAffiliation'], d['professionalTitle'])
+                   d.get('politicalAffiliation', ''), d.get('professionalTitle', ''))
 
     def to_dict(self):
         data = super().to_dict()

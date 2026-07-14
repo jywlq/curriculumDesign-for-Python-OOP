@@ -19,13 +19,15 @@ class Experimenter(BaseClass):
         return [("laboratory", "所在实验室"), ("duties", "职务")]
 
     def get_display_fields(self, brief: bool = False) -> list:
-        """返回用于展示的特有字段值"""
+        """返回展示字段，brief=True 时返回简要信息"""
+        if brief:
+            return [self._laboratory]
         return [self._laboratory, self._duties]
 
     @classmethod
     def from_dict(cls, d: dict):
         return cls(d['personID'], d['personName'], d['personGender'], d['personAge'],
-                   d['laboratory'], d['duties'])
+                   d.get('laboratory', ''), d.get('duties', ''))
 
     def to_dict(self):
         data = super().to_dict()

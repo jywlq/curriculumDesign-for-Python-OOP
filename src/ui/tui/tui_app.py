@@ -6,7 +6,7 @@ TUI 界面模块 - 基于 Textual 的终端用户界面
 """
 from textual.app import App, ComposeResult
 from textual.widgets import (
-    Footer, Static, ListItem, ListView, Label, Button, DataTable
+    Footer, Static, ListItem, ListView, Label, Button
 )
 from textual.containers import Container, Horizontal, Vertical, VerticalScroll
 from textual.reactive import reactive
@@ -82,7 +82,7 @@ def render_welcome_page(service: PersonService, auto_save: bool) -> Panel:
     content.add_column(justify="center")
 
     title_text = Text("\n✨ 欢迎使用人员信息管理系统 ✨\n", style="bold gold1")
-    subtitle_text = Text("TUI版界面\n\n25计科(创)李鑫杰\n\n", style="italic dim")
+    subtitle_text = Text("高校人员信息管理系统\n\n", style="italic dim")
     content.add_row(title_text)
     content.add_row(subtitle_text)
 

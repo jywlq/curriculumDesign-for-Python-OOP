@@ -28,7 +28,7 @@ class Teacher(BaseClass):
     @classmethod
     def from_dict(cls, d: dict):
         return cls(d['personID'], d['personName'], d['personGender'], d['personAge'],
-                   d.get('department', ''), d['major'], d['professionalTitle'])
+                   d.get('department', ''), d.get('major', ''), d.get('professionalTitle', ''))
 
     def to_dict(self):
         data = super().to_dict()

@@ -135,10 +135,7 @@
         "personName": "朱伟",
         "personGender": "男",
         "personAge": 48,
-        "politicalAffiliation": "党员",
-        "professionalTitle": "教授",
-        "department": "计算机系",
-        "major": "计算机科学"
+        "politicalAffiliation": "党员"
     },
     {
         "__class__": "TeacherAdmin",
@@ -146,10 +143,7 @@
         "personName": "胡娟",
         "personGender": "女",
         "personAge": 39,
-        "politicalAffiliation": "党员",
-        "professionalTitle": "副教授",
-        "department": "外语系",
-        "major": "日语"
+        "politicalAffiliation": "党员"
     },
     {
         "__class__": "TeacherAdmin",
@@ -157,10 +151,7 @@
         "personName": "郭涛",
         "personGender": "男",
         "personAge": 52,
-        "politicalAffiliation": "党员",
-        "professionalTitle": "教授",
-        "department": "数学系",
-        "major": "统计学"
+        "politicalAffiliation": "党员"
     },
     {
         "__class__": "Teacher",
@@ -245,10 +236,7 @@
         "personName": "许晴",
         "personGender": "女",
         "personAge": 36,
-        "politicalAffiliation": "群众",
-        "professionalTitle": "副教授",
-        "department": "经济系",
-        "major": "金融学"
+        "politicalAffiliation": "群众"
     },
     {
         "__class__": "Experimenter",

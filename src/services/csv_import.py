@@ -88,7 +88,7 @@ class DataImporter:
             'personID': person_id,
             'personName': name,
             'personGender': gender,
-            'personAge': int(age),
+            'personAge': str(age),
             **extra_dict
         }
 
@@ -102,7 +102,7 @@ class DataImporter:
             return result
 
         # 格式：系部:计算机系, 专业:软件工程, 职称:副教授
-        for item in extra_str.split(', '):
+        for item in [x.strip() for x in extra_str.split(',')]:
             if ':' in item:
                 key, value = item.split(':', 1)
                 # 将中文字段名映射为英文

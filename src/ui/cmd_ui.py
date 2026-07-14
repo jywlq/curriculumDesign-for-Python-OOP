@@ -5,7 +5,6 @@
 使用异常机制实现"输入 0 返回上级菜单"，复用 _filter_list 方法减少代码重复。
 """
 import os
-import json
 from src.services import PersonService
 from src.services.config import load_auto_save, save_auto_save
 from src.services.csv_export import DataExporter
@@ -17,8 +16,6 @@ from src.ui.collector import PersonCollector
 
 class CmdUI:
     """命令行用户界面主类"""
-
-    CONFIG_FILE = 'data/config.json'
 
     def __init__(self):
         self.service = PersonService()

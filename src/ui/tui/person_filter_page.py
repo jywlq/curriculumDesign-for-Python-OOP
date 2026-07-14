@@ -5,7 +5,7 @@
 复用 PersonFilter 类进行筛选，复用 PersonListPage 显示列表。
 """
 from textual.app import ComposeResult
-from textual.widgets import Static, Button, Input, ListView, ListItem
+from textual.widgets import Static, Button, Input
 from textual.containers import VerticalScroll, Horizontal, Vertical
 
 from src.services import PersonService

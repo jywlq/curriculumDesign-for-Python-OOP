@@ -4,7 +4,7 @@
 定义所有人员类型的公共字段和序列化方法，是整个数据模型的根基。
 子类继承此类获得基础属性，并通过覆写 get_fields() 返回各自特有字段。
 """
-from typing import List, Tuple, Dict, Type
+from typing import List, Tuple, Dict
 
 
 class BaseClass:

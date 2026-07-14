@@ -39,10 +39,10 @@ class TeacherAdmin(Teacher, Admin):
     @classmethod
     def from_dict(cls, d: dict):
         return cls(d['personID'], d['personName'], d['personGender'], d['personAge'],
-                   d.get('department', ''), d['major'], d['professionalTitle'], d['politicalAffiliation'])
+                   d.get('department', ''), d.get('major', ''), d.get('professionalTitle', ''), d.get('politicalAffiliation', ''))
 
     def to_dict(self):
-        data = Teacher.to_dict(self)
+        data = BaseClass.to_dict(self)
         data.update({
             '__class__': 'TeacherAdmin',
             'politicalAffiliation': self._political_affiliation

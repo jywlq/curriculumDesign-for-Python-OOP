@@ -4,7 +4,7 @@
 负责人员的增删改查操作和 JSON 数据持久化。
 所有 UI 层的人员操作都通过此类完成，实现了业务逻辑与界面的分离。
 """
-from typing import List, Optional, Dict
+from typing import List, Dict
 from src.models import Teacher, Experimenter, Admin, TeacherAdmin
 import json
 
@@ -127,7 +127,11 @@ class PersonService:
             self.person_list.clear()
             seen = set()
             for d in data_list:
-                cls = class_map.get(d.get('__class__'), Teacher)
+                class_name = d.get('__class__', '')
+                if class_name not in class_map:
+                    print(f'[警告] 未知人员类型: {class_name}，跳过该记录')
+                    continue
+                cls = class_map[class_name]
                 person = cls.from_dict(d)
                 if person._person_id not in seen:
                     seen.add(person._person_id)
