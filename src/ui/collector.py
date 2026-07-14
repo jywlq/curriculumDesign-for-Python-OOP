@@ -4,12 +4,9 @@
 封装用户输入收集逻辑，根据人员类型动态收集对应字段。
 使用多态：调用 person_class.get_fields() 获取不同类型人员的特有字段。
 """
-import re
 from src.models import Teacher, Experimenter, Admin, TeacherAdmin
 from src.ui.exceptions import ReturnBack
-
-# 编号格式规则：类型前缀 + 三位数字
-ID_PATTERN = re.compile(r'^(T|E|A|TA)\d{3}$')
+from src.ui.constants import ID_PATTERN
 
 
 class PersonCollector:

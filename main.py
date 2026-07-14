@@ -12,5 +12,5 @@ if '--cli' in sys.argv:
     app = CmdUI()
     app.run()
 else:
-    from src.ui.tui_app import PersonTuiApp
+    from src.ui.tui.tui_app import PersonTuiApp
     PersonTuiApp().run()

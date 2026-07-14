@@ -1,48 +1,24 @@
 """
-人员修改弹窗组件
+人员添加弹窗组件
 
-显示当前人员信息，用户可逐字段修改后保存。
+显示空白表单，用户选择类型后填写各字段并保存。
 通过 get_fields() 动态获取特有字段，实现多态。
 """
-import re
 from textual.app import ComposeResult, Screen
 from textual.widgets import Static, Button, Input, Label, Select
 from textual.containers import Container, Vertical, Horizontal
-from textual.message import Message
 
 from src.services import PersonService
-from src.models import Teacher, Experimenter, Admin, TeacherAdmin
-from src.ui.confirm_screen import ConfirmScreen
-
-# 编号格式规则
-ID_PATTERN = re.compile(r'^(T|E|A|TA)\d{3}$')
+from src.ui.tui.confirm_screen import ConfirmScreen
+from src.ui.constants import ID_PATTERN, CLASS_MAP, camel_to_snake
+from src.ui.tui.widgets import DataChanged
 
 
-class DataChanged(Message):
-    """数据变更消息"""
-    pass
-
-
-def camel_to_snake(name: str) -> str:
-    """驼峰命名转下划线命名"""
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
-
-
-# 类名到类对象的映射
-CLASS_MAP = {
-    "Teacher": Teacher,
-    "Experimenter": Experimenter,
-    "Admin": Admin,
-    "TeacherAdmin": TeacherAdmin,
-}
-
-
-class PersonEditScreen(Screen):
-    """人员修改弹窗 - 居中弹窗
+class PersonAddScreen(Screen):
+    """人员添加弹窗 - 居中弹窗
 
     用法：
-        app.push_screen(PersonEditScreen(person, service))
+        app.push_screen(PersonAddScreen(service))
 
     关闭方式：
         - 点击「保存」按钮（保存后关闭）
@@ -55,7 +31,7 @@ class PersonEditScreen(Screen):
     ]
 
     DEFAULT_CSS = """
-    PersonEditScreen {
+    PersonAddScreen {
         align: center middle;
         background: black 30%;
     }
@@ -106,24 +82,36 @@ class PersonEditScreen(Screen):
     }
     """
 
-    def __init__(self, person, service: PersonService, on_done=None):
-        self.person = person
+    def __init__(self, service: PersonService, on_done=None):
         self.service = service
         self.on_done = on_done
-        self.person_type = type(person).__name__
-        self.fields = {}  # 存储输入控件引用
+        self.selected_type = "Teacher"  # 默认选中教师类型
         super().__init__()
 
     def compose(self) -> ComposeResult:
         with Container(id="edit-container"):
-            yield Static(f"✏️ 修改人员信息", id="edit-title")
+            yield Static("➕ 添加人员", id="edit-title")
 
             with Vertical(id="edit-form"):
+                # 人员类型选择器
+                with Vertical(classes="field-group"):
+                    yield Label("人员类型", classes="field-label")
+                    yield Select(
+                        options=[
+                            ("教师", "Teacher"),
+                            ("实验员", "Experimenter"),
+                            ("行政人员", "Admin"),
+                            ("教师兼行政", "TeacherAdmin"),
+                        ],
+                        prompt="请选择人员类型",
+                        id="select-type",
+                        classes="field-input",
+                    )
+
                 # 公共字段
                 with Vertical(classes="field-group"):
                     yield Label("编号（格式：T/E/A/TA + 三位数字）", classes="field-label")
                     yield Input(
-                        value=self.person._person_id,
                         placeholder="编号",
                         classes="field-input",
                         id="input-id"
@@ -132,7 +120,6 @@ class PersonEditScreen(Screen):
                 with Vertical(classes="field-group"):
                     yield Label("姓名", classes="field-label")
                     yield Input(
-                        value=self.person._person_name,
                         placeholder="姓名",
                         classes="field-input",
                         id="input-name"
@@ -143,7 +130,6 @@ class PersonEditScreen(Screen):
                     yield Select(
                         options=[("男", "男"), ("女", "女")],
                         prompt="请选择性别",
-                        value=self.person._person_gender,
                         id="input-gender",
                         classes="field-input",
                     )
@@ -151,42 +137,70 @@ class PersonEditScreen(Screen):
                 with Vertical(classes="field-group"):
                     yield Label("年龄", classes="field-label")
                     yield Input(
-                        value=str(self.person._person_age),
                         placeholder="年龄",
                         classes="field-input",
                         id="input-age"
                     )
-
-                # 特有字段（通过 get_fields() 动态生成）
-                for field_key, field_prompt in type(self.person).get_fields():
-                    # 从 person 对象获取当前值（驼峰转下划线）
-                    attr_name = f"_{camel_to_snake(field_key)}"
-                    current_value = getattr(self.person, attr_name, "")
-                    with Vertical(classes="field-group"):
-                        yield Label(field_prompt, classes="field-label")
-                        yield Input(
-                            value=current_value,
-                            placeholder=field_prompt,
-                            classes="field-input",
-                            id=f"input-{field_key}"
-                        )
-
             with Horizontal(id="edit-buttons"):
                 yield Button("✓ 保存", variant="success", id="btn-save")
                 yield Button("✕ 取消", variant="default", id="btn-cancel")
 
+    def on_mount(self) -> None:
+        """挂载后设置默认选中值并初始化额外字段"""
+        select = self.query_one("#select-type", Select)
+        select.value = "Teacher"
+        gender_select = self.query_one("#input-gender", Select)
+        gender_select.value = "男"
+        self._rebuild_extra_fields()
+
+    def on_select_changed(self, event: Select.Changed) -> None:
+        """类型选择器变更时重建额外字段"""
+        if event.select.id == "select-type" and event.value is not None:
+            self.selected_type = event.value
+            self._rebuild_extra_fields()
+
+    def _rebuild_extra_fields(self) -> None:
+        """根据当前选中的类型重建额外字段，直接挂载到 #edit-form 末尾"""
+        form = self.query_one("#edit-form", Vertical)
+
+        # 批量移除旧的特有字段组（通过 CSS class 选择器）
+        form.remove_children(".extra-field")
+
+        person_class = CLASS_MAP.get(self.selected_type)
+        if not person_class:
+            return
+
+        for field_key, field_prompt in person_class.get_fields():
+            form.mount(
+                Vertical(
+                    Label(field_prompt, classes="field-label"),
+                    Input(
+                        placeholder=field_prompt,
+                        classes="field-input",
+                        id=f"input-{field_key}"
+                    ),
+                    classes="field-group extra-field",
+                )
+            )
+
     def _collect_data(self) -> dict:
         """收集表单数据（返回驼峰格式，供验证用）"""
+        gender_val = self.query_one("#input-gender", Select).value
         data = {
             "personID": self.query_one("#input-id", Input).value.strip(),
             "personName": self.query_one("#input-name", Input).value.strip(),
-            "personGender": self.query_one("#input-gender", Select).value,
+            "personGender": gender_val if gender_val != Select.BLANK else "",
             "personAge": self.query_one("#input-age", Input).value.strip(),
         }
         # 收集特有字段（驼峰格式）
-        for field_key, _ in type(self.person).get_fields():
-            input_widget = self.query_one(f"#input-{field_key}", Input)
-            data[field_key] = input_widget.value.strip()
+        person_class = CLASS_MAP.get(self.selected_type)
+        if person_class:
+            for field_key, _ in person_class.get_fields():
+                try:
+                    input_widget = self.query_one(f"#input-{field_key}", Input)
+                    data[field_key] = input_widget.value.strip()
+                except Exception:
+                    data[field_key] = ""
         return data
 
     def _convert_to_init_params(self, data: dict) -> dict:
@@ -199,9 +213,11 @@ class PersonEditScreen(Screen):
             "person_age": data["personAge"],
         }
         # 特有字段：驼峰转下划线
-        for field_key, _ in type(self.person).get_fields():
-            snake_key = camel_to_snake(field_key)
-            result[snake_key] = data[field_key]
+        person_class = CLASS_MAP.get(self.selected_type)
+        if person_class:
+            for field_key, _ in person_class.get_fields():
+                snake_key = camel_to_snake(field_key)
+                result[snake_key] = data[field_key]
         return result
 
     def _validate_data(self, data: dict) -> str:
@@ -224,9 +240,11 @@ class PersonEditScreen(Screen):
         except ValueError:
             return "年龄必须是一个整数"
         # 检查特有字段是否为空
-        for field_key, field_prompt in type(self.person).get_fields():
-            if not data[field_key]:
-                return f"{field_prompt}不能为空"
+        person_class = CLASS_MAP.get(self.selected_type)
+        if person_class:
+            for field_key, field_prompt in person_class.get_fields():
+                if not data.get(field_key, ""):
+                    return f"{field_prompt}不能为空"
         return ""
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -240,7 +258,7 @@ class PersonEditScreen(Screen):
 
             # 弹出确认对话框
             self.app.push_screen(
-                ConfirmScreen("确认保存修改？", self._do_save, data)
+                ConfirmScreen("确认添加此人员？", self._do_save, data)
             )
 
         elif event.button.id == "btn-cancel":
@@ -248,7 +266,7 @@ class PersonEditScreen(Screen):
 
     def _do_save(self, data: dict) -> None:
         """执行保存"""
-        person_class = CLASS_MAP.get(self.person_type)
+        person_class = CLASS_MAP.get(self.selected_type)
         if not person_class:
             self.app.notify("未知的人员类型", title="错误", severity="error", timeout=3)
             return
@@ -257,17 +275,23 @@ class PersonEditScreen(Screen):
             # 转换数据格式：驼峰→下划线
             init_params = self._convert_to_init_params(data)
             new_person = person_class(**init_params)
-            if self.service.update_person(self.person._person_id, new_person):
-                self.app.notify("修改成功", title="成功", severity="information", timeout=2)
+
+            # 检查编号是否重复
+            if self.service.person_id_check(new_person._person_id):
+                self.app.notify("添加失败，编号已存在", title="失败", severity="warning", timeout=3)
+                return
+
+            if self.service.add_person(new_person):
+                self.app.notify("添加成功", title="成功", severity="information", timeout=2)
                 # 发送数据变更消息
                 self.post_message(DataChanged())
                 if self.on_done:
                     self.on_done()
                 self.app.pop_screen()
             else:
-                self.app.notify("修改失败，编号可能已存在", title="失败", severity="warning", timeout=3)
+                self.app.notify("添加失败", title="失败", severity="warning", timeout=3)
         except Exception as e:
-            self.app.notify(f"修改失败：{e}", title="错误", severity="error", timeout=3)
+            self.app.notify(f"添加失败：{e}", title="错误", severity="error", timeout=3)
 
     def action_cancel(self) -> None:
         """取消操作"""

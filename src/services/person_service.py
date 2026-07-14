@@ -8,6 +8,15 @@ from typing import List, Optional, Dict
 from src.models import Teacher, Experimenter, Admin, TeacherAdmin
 import json
 
+# 统计字典 key 常量
+STAT_TOTAL = "总人数"
+STAT_MALE = "男员工"
+STAT_FEMALE = "女员工"
+STAT_TEACHER = "教师"
+STAT_EXPERIMENTER = "实验员"
+STAT_ADMIN = "行政人员"
+STAT_TEACHER_ADMIN = "教师兼行政人员"
+
 
 class PersonService:
     """人员服务类，封装增删改查和文件读写"""
@@ -68,29 +77,29 @@ class PersonService:
     def get_person_statistics(self) -> Dict[str, int]:
         """统计总人数、性别分布和各类人员数量"""
         res = {
-            "总人数": len(self.person_list),
-            "男员工": 0,
-            "女员工": 0,
-            "教师": 0,
-            "实验员": 0,
-            "行政人员": 0,
-            "教师兼行政人员": 0
+            STAT_TOTAL: len(self.person_list),
+            STAT_MALE: 0,
+            STAT_FEMALE: 0,
+            STAT_TEACHER: 0,
+            STAT_EXPERIMENTER: 0,
+            STAT_ADMIN: 0,
+            STAT_TEACHER_ADMIN: 0
         }
         for p in self.person_list:
             # 统计性别
             if p._person_gender == "男":
-                res["男员工"] += 1
+                res[STAT_MALE] += 1
             else:
-                res["女员工"] += 1
+                res[STAT_FEMALE] += 1
             # 统计类型（先子类后父类，避免重复计数）
             if isinstance(p, TeacherAdmin):
-                res["教师兼行政人员"] += 1
+                res[STAT_TEACHER_ADMIN] += 1
             elif isinstance(p, Teacher):
-                res["教师"] += 1
+                res[STAT_TEACHER] += 1
             elif isinstance(p, Experimenter):
-                res["实验员"] += 1
+                res[STAT_EXPERIMENTER] += 1
             elif isinstance(p, Admin):
-                res["行政人员"] += 1
+                res[STAT_ADMIN] += 1
         return res
 
     def save(self, filename: str = 'data/person.json'):

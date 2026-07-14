@@ -7,6 +7,7 @@ UI 层通用组件
 from textual.app import ComposeResult
 from textual.widgets import Static
 from textual.containers import VerticalScroll
+from textual.message import Message
 from rich.panel import Panel
 
 
@@ -39,3 +40,8 @@ class RichPanelPage(VerticalScroll):
         self.remove_children()
         self._panel = new_panel
         self.mount(Static(new_panel))
+
+
+class DataChanged(Message):
+    """数据变更消息"""
+    pass

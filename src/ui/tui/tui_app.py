@@ -18,18 +18,18 @@ from rich import box
 
 from src.services import PersonService
 from src.services.config import load_auto_save, save_auto_save
-from src.ui.person_list_page import PersonListPage
-from src.ui.person_filter_page import PersonFilterPage
+from src.ui.tui.person_list_page import PersonListPage
+from src.ui.tui.person_filter_page import PersonFilterPage
 from src.ui.constants import (
     TYPE_META, STAT_TOTAL, STAT_MALE, STAT_FEMALE,
     STAT_TEACHER, STAT_EXPERIMENTER, STAT_ADMIN, STAT_TEACHER_ADMIN,
     BAR_BLOCK_PERCENT, BAR_TOTAL_BLOCKS,
 )
-from src.ui.widgets import RichPanelPage
+from src.ui.tui.widgets import RichPanelPage
 from src.services.csv_export import DataExporter
 from src.services.csv_import import DataImporter
-from src.ui.person_add_screen import PersonAddScreen
-from src.ui.csv_import_screen import CsvImportScreen
+from src.ui.tui.person_add_screen import PersonAddScreen
+from src.ui.tui.csv_import_screen import CsvImportScreen
 
 
 

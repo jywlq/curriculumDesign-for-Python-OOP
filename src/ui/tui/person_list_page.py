@@ -14,8 +14,8 @@ from rich.table import Table
 from rich import box
 
 from src.services import PersonService
-from src.ui.person_detail_page import PersonDetailScreen
-from src.ui.constants import TYPE_META, COL_WIDTH_SEQ, COL_WIDTH_ID, COL_WIDTH_NAME
+from src.ui.tui.person_detail_page import PersonDetailScreen
+from src.ui.constants import TYPE_META, COL_WIDTH_SEQ, COL_WIDTH_ID, COL_WIDTH_NAME, STAT_TOTAL, STAT_TEACHER, STAT_EXPERIMENTER, STAT_ADMIN, STAT_TEACHER_ADMIN
 
 
 def _build_row_text(person, index: int) -> Text:
@@ -60,19 +60,19 @@ def _build_header_panel(service: PersonService) -> Panel:
     # 统计行
     stat_text = Text()
     stat_text.append("  共 ", style="white")
-    stat_text.append(f"{stat['总人数']}", style="bold gold1")
+    stat_text.append(f"{stat[STAT_TOTAL]}", style="bold gold1")
     stat_text.append(" 人    ", style="white")
     stat_text.append("👨‍🏫 ", style="cyan")
-    stat_text.append(f"{stat['教师']}", style="bold cyan")
+    stat_text.append(f"{stat[STAT_TEACHER]}", style="bold cyan")
     stat_text.append(" 教师   ", style="dim")
     stat_text.append("🔬 ", style="green")
-    stat_text.append(f"{stat['实验员']}", style="bold green")
+    stat_text.append(f"{stat[STAT_EXPERIMENTER]}", style="bold green")
     stat_text.append(" 实验员   ", style="dim")
     stat_text.append("💼 ", style="magenta")
-    stat_text.append(f"{stat['行政人员']}", style="bold magenta")
+    stat_text.append(f"{stat[STAT_ADMIN]}", style="bold magenta")
     stat_text.append(" 行政   ", style="dim")
     stat_text.append("👨‍💼 ", style="yellow")
-    stat_text.append(f"{stat['教师兼行政人员']}", style="bold yellow")
+    stat_text.append(f"{stat[STAT_TEACHER_ADMIN]}", style="bold yellow")
     stat_text.append(" 兼岗  ", style="dim")
 
     # 提示行

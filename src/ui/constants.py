@@ -14,14 +14,11 @@ TYPE_META = {
     "TeacherAdmin": ("👨‍💼", "教师兼行政", "yellow",  "--teacher-admin", "教师兼行政人员"),
 }
 
-# 统计字典 key 常量
-STAT_TOTAL = "总人数"
-STAT_MALE = "男员工"
-STAT_FEMALE = "女员工"
-STAT_TEACHER = "教师"
-STAT_EXPERIMENTER = "实验员"
-STAT_ADMIN = "行政人员"
-STAT_TEACHER_ADMIN = "教师兼行政人员"
+# 统计字典 key 常量（从 service 层导入，供 UI 层使用）
+from src.services.person_service import (
+    STAT_TOTAL, STAT_MALE, STAT_FEMALE,
+    STAT_TEACHER, STAT_EXPERIMENTER, STAT_ADMIN, STAT_TEACHER_ADMIN,
+)
 
 # 进度条参数
 BAR_BLOCK_PERCENT = 5
@@ -31,3 +28,22 @@ BAR_TOTAL_BLOCKS = 20
 COL_WIDTH_SEQ = 3
 COL_WIDTH_ID = 8
 COL_WIDTH_NAME = 6
+
+import re
+from src.models import Teacher, Experimenter, Admin, TeacherAdmin
+
+# 编号格式规则：类型前缀 + 三位数字
+ID_PATTERN = re.compile(r'^(T|E|A|TA)\d{3}$')
+
+# 类名到类对象的映射
+CLASS_MAP = {
+    "Teacher": Teacher,
+    "Experimenter": Experimenter,
+    "Admin": Admin,
+    "TeacherAdmin": TeacherAdmin,
+}
+
+def camel_to_snake(name: str) -> str:
+    """驼峰命名转下划线命名"""
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()

@@ -10,10 +10,10 @@ from textual.containers import VerticalScroll, Horizontal, Vertical
 
 from src.services import PersonService
 from src.ui.filter import PersonFilter
-from src.ui.person_list_page import PersonListPage, PersonListItem
-from src.ui.person_detail_page import PersonDetailScreen
-from src.ui.person_edit_screen import PersonEditScreen
-from src.ui.person_delete_confirm import PersonDeleteConfirmScreen
+from src.ui.tui.person_list_page import PersonListPage, PersonListItem
+from src.ui.tui.person_detail_page import PersonDetailScreen
+from src.ui.tui.person_edit_screen import PersonEditScreen
+from src.ui.tui.person_delete_confirm import PersonDeleteConfirmScreen
 
 
 class PersonFilterPage(VerticalScroll):

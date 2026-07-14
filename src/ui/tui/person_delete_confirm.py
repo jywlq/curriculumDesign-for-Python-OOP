@@ -7,15 +7,10 @@
 from textual.app import ComposeResult, Screen
 from textual.widgets import Static, Button
 from textual.containers import Container, Vertical, Horizontal
-from textual.message import Message
 
 from src.services import PersonService
-from src.ui.person_detail_page import render_person_detail_modal
-
-
-class DataChanged(Message):
-    """数据变更消息"""
-    pass
+from src.ui.tui.person_detail_page import render_person_detail_modal
+from src.ui.tui.widgets import DataChanged
 
 
 class PersonDeleteConfirmScreen(Screen):
