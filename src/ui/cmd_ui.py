@@ -158,6 +158,9 @@ class CmdUI:
 
     def delete_person(self):
         """删除人员：筛选后输入序号删除"""
+        if not self.service.person_list:
+            self.show_message('记录为空，暂无人员可删除')
+            return
         pf = PersonFilter(self.service)
         while True:
             person = self._filter_list('删除人员', '删除', pf)

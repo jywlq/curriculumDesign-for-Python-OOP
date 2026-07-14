@@ -472,6 +472,9 @@ class MainContent(Container):
             return
 
         # 其他菜单项：正常切换页面
+        if name == "删除人员" and not self.service.person_list:
+            self.app.notify('记录为空，暂无人员可删除', title='提示', severity='warning', timeout=3)
+            return
         content = self.query_one("#content-area", Vertical)
         content.remove_children()
         content.mount(self._build_page(event.index))
