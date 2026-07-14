@@ -235,6 +235,15 @@ class PersonListPage(VerticalScroll):
         ]
         yield ListView(*items, id="person-list")
 
+    def on_list_view_highlighted(self, event: ListView.Highlighted) -> None:
+        """键盘导航时手动管理高亮，确保只有当前项高亮"""
+        if event.item is None:
+            return
+        list_view = self.query_one("#person-list", ListView)
+        for child in list_view.children:
+            if isinstance(child, PersonListItem):
+                child.set_class(child is event.item, "--highlight")
+
     def on_list_view_selected(self, event: ListView.Selected) -> None:
         """行选中事件 - 点击或按 Enter 触发"""
         item = event.item
