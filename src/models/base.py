@@ -25,6 +25,22 @@ class BaseClass:
         self._person_gender = person_gender
         self._person_age = person_age
 
+    @property
+    def person_id(self) -> str:
+        return self._person_id
+
+    @property
+    def person_name(self) -> str:
+        return self._person_name
+
+    @property
+    def person_gender(self) -> str:
+        return self._person_gender
+
+    @property
+    def person_age(self) -> str:
+        return self._person_age
+
     @classmethod
     def get_fields(cls) -> List[Tuple[str, str]]:
         """返回子类特有字段列表，基类返回空列表（模板方法）"""

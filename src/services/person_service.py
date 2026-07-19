@@ -7,6 +7,9 @@
 from typing import List, Dict
 from src.models import Teacher, Experimenter, Admin, TeacherAdmin
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 # 统计字典 key 常量
 STAT_TOTAL = "总人数"
@@ -148,7 +151,7 @@ class PersonService:
             for d in data_list:
                 class_name = d.get('__class__', '')
                 if class_name not in class_map:
-                    print(f'[警告] 未知人员类型: {class_name}，跳过该记录')
+                    logger.warning('未知人员类型: %s，跳过该记录', class_name)
                     continue
                 cls = class_map[class_name]
                 person = cls.from_dict(d)
@@ -158,7 +161,7 @@ class PersonService:
         except FileNotFoundError:
             pass  # 文件不存在（首次运行），列表保持空
         except json.JSONDecodeError:
-            print(f'[警告] 数据文件 {filename} 格式错误，已清空人员列表')
+            logger.warning('数据文件 %s 格式错误，已清空人员列表', filename)
 
     def __str__(self):
         return ''.join([str(p) + '\n' for p in self.person_list])
