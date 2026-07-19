@@ -4,7 +4,7 @@
         "personID": "T001",
         "personName": "李华",
         "personGender": "女",
-        "personAge": 28,
+        "personAge": "28",
         "department": "计算机系",
         "major": "人工智能",
         "professionalTitle": "讲师"
@@ -14,7 +14,7 @@
         "personID": "T003",
         "personName": "王强",
         "personGender": "男",
-        "personAge": 42,
+        "personAge": "42",
         "department": "数学系",
         "major": "应用数学",
         "professionalTitle": "教授"
@@ -24,7 +24,7 @@
         "personID": "T004",
         "personName": "刘芳",
         "personGender": "女",
-        "personAge": 31,
+        "personAge": "31",
         "department": "外语系",
         "major": "英语",
         "professionalTitle": "讲师"
@@ -34,7 +34,7 @@
         "personID": "T005",
         "personName": "陈明",
         "personGender": "男",
-        "personAge": 45,
+        "personAge": "45",
         "department": "物理系",
         "major": "理论物理",
         "professionalTitle": "教授"
@@ -44,7 +44,7 @@
         "personID": "E001",
         "personName": "赵丽",
         "personGender": "女",
-        "personAge": 26,
+        "personAge": "26",
         "laboratory": "计算机实验室",
         "duties": "实验员"
     },
@@ -53,7 +53,7 @@
         "personID": "E002",
         "personName": "孙伟",
         "personGender": "男",
-        "personAge": 33,
+        "personAge": "33",
         "laboratory": "物理实验室",
         "duties": "高级实验员"
     },
@@ -62,7 +62,7 @@
         "personID": "E003",
         "personName": "周娜",
         "personGender": "女",
-        "personAge": 29,
+        "personAge": "29",
         "laboratory": "化学实验室",
         "duties": "实验员"
     },
@@ -71,7 +71,7 @@
         "personID": "E004",
         "personName": "吴刚",
         "personGender": "男",
-        "personAge": 38,
+        "personAge": "38",
         "laboratory": "生物实验室",
         "duties": "实验室主任"
     },
@@ -80,7 +80,7 @@
         "personID": "E005",
         "personName": "郑婷",
         "personGender": "女",
-        "personAge": 27,
+        "personAge": "27",
         "laboratory": "计算机实验室",
         "duties": "实验助理"
     },
@@ -89,7 +89,7 @@
         "personID": "A001",
         "personName": "黄磊",
         "personGender": "男",
-        "personAge": 40,
+        "personAge": "40",
         "politicalAffiliation": "党员",
         "professionalTitle": "高级政工师"
     },
@@ -98,7 +98,7 @@
         "personID": "A002",
         "personName": "林静",
         "personGender": "女",
-        "personAge": 35,
+        "personAge": "35",
         "politicalAffiliation": "党员",
         "professionalTitle": "政工师"
     },
@@ -107,7 +107,7 @@
         "personID": "A003",
         "personName": "何军",
         "personGender": "男",
-        "personAge": 50,
+        "personAge": "50",
         "politicalAffiliation": "群众",
         "professionalTitle": "助理政工师"
     },
@@ -116,7 +116,7 @@
         "personID": "A004",
         "personName": "罗敏",
         "personGender": "女",
-        "personAge": 32,
+        "personAge": "32",
         "politicalAffiliation": "党员",
         "professionalTitle": "政工师"
     },
@@ -125,7 +125,7 @@
         "personID": "A005",
         "personName": "谢峰",
         "personGender": "男",
-        "personAge": 45,
+        "personAge": "45",
         "politicalAffiliation": "群众",
         "professionalTitle": "高级政工师"
     },
@@ -134,7 +134,7 @@
         "personID": "TA001",
         "personName": "朱伟",
         "personGender": "男",
-        "personAge": 48,
+        "personAge": "48",
         "politicalAffiliation": "党员"
     },
     {
@@ -142,7 +142,7 @@
         "personID": "TA002",
         "personName": "胡娟",
         "personGender": "女",
-        "personAge": 39,
+        "personAge": "39",
         "politicalAffiliation": "党员"
     },
     {
@@ -150,7 +150,7 @@
         "personID": "TA003",
         "personName": "郭涛",
         "personGender": "男",
-        "personAge": 52,
+        "personAge": "52",
         "politicalAffiliation": "党员"
     },
     {
@@ -158,7 +158,7 @@
         "personID": "T006",
         "personName": "马超",
         "personGender": "男",
-        "personAge": 30,
+        "personAge": "30",
         "department": "体育系",
         "major": "体育教育",
         "professionalTitle": "讲师"
@@ -168,7 +168,7 @@
         "personID": "T007",
         "personName": "高雅",
         "personGender": "女",
-        "personAge": 27,
+        "personAge": "27",
         "department": "艺术系",
         "major": "音乐",
         "professionalTitle": "助教"
@@ -178,7 +178,7 @@
         "personID": "E006",
         "personName": "韩冰",
         "personGender": "男",
-        "personAge": 34,
+        "personAge": "34",
         "laboratory": "电子实验室",
         "duties": "实验员"
     },
@@ -187,7 +187,7 @@
         "personID": "E007",
         "personName": "冯雪",
         "personGender": "女",
-        "personAge": 25,
+        "personAge": "25",
         "laboratory": "计算机实验室",
         "duties": "实习实验员"
     },
@@ -196,7 +196,7 @@
         "personID": "A006",
         "personName": "蒋平",
         "personGender": "男",
-        "personAge": 47,
+        "personAge": "47",
         "politicalAffiliation": "党员",
         "professionalTitle": "高级政工师"
     },
@@ -205,7 +205,7 @@
         "personID": "T008",
         "personName": "沈月",
         "personGender": "女",
-        "personAge": 33,
+        "personAge": "33",
         "department": "经济系",
         "major": "会计学",
         "professionalTitle": "讲师"
@@ -215,7 +215,7 @@
         "personID": "T009",
         "personName": "韩梅",
         "personGender": "女",
-        "personAge": 29,
+        "personAge": "29",
         "department": "外语系",
         "major": "日语",
         "professionalTitle": "助教"
@@ -225,7 +225,7 @@
         "personID": "T010",
         "personName": "杨帆",
         "personGender": "男",
-        "personAge": 41,
+        "personAge": "41",
         "department": "物理系",
         "major": "光学",
         "professionalTitle": "副教授"
@@ -235,16 +235,7 @@
         "personID": "TA004",
         "personName": "许晴",
         "personGender": "女",
-        "personAge": 36,
+        "personAge": "36",
         "politicalAffiliation": "群众"
-    },
-    {
-        "__class__": "Experimenter",
-        "personID": "E008",
-        "personName": "邓超",
-        "personGender": "男",
-        "personAge": 31,
-        "laboratory": "物理实验室",
-        "duties": "实验员"
     }
 ]

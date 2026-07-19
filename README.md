@@ -54,7 +54,8 @@ BaseClass（基类）
 | 编辑人员 | 筛选后选择修改，弹窗表单，编号唯一性校验 | ✅ |
 | 删除人员 | 筛选后选择删除，二次确认弹窗 | ✅ |
 | 统计人员 | 按类型/性别统计，可视化进度条 | ✅ |
-| 保存/读取 | JSON 持久化，自动/手动保存模式 | ✅ |
+| 保存/读取 | JSON 持久化 | ✅ |
+| 自动保存 | 选取是否自动保存，状态存储在config.json持久化 |  |
 | CSV 导出 | 导出全部人员数据为 CSV 文件 | ✅ |
 | CSV 导入 | 批量导入 CSV 文件，自动去重 | ✅ |
 | TUI 界面 | 基于 Textual 的终端图形界面，鼠标/键盘双操作 | ✅ |
@@ -74,7 +75,6 @@ BaseClass（基类）
 ```
 ├── main.py                          # 程序入口
 ├── README.md                        # 项目说明
-├── AGENTS.md                        # 开发指南
 ├── src/
 │   ├── __init__.py
 │   ├── models/                      # 数据模型层
@@ -124,18 +124,14 @@ BaseClass（基类）
 ## 三层架构
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    UI 层（用户界面）                      │
-│   cmd_ui.py (CLI)  │  tui/ (TUI，基于 Textual)           │
-├─────────────────────────────────────────────────────────┤
-│                 Service 层（业务逻辑）                    │
-│   person_service.py │ csv_export.py │ csv_import.py      │
-│   增删改查 │ JSON 持久化 │ 编号校验 │ 统计 │ 导入导出     │
-├─────────────────────────────────────────────────────────┤
-│                  Model 层（数据模型）                     │
-│   BaseClass │ Teacher │ Experimenter │ Admin │ ...      │
-│   属性定义 │ 序列化 │ 多态展示字段                        │
-└─────────────────────────────────────────────────────────┘
+                    UI 层（用户界面）                     
+   cmd_ui (CLI)  │  TUI/ (基于 Rich_Textual)           
+                 Service 层（业务逻辑）                    
+   person_service.py │ csv_export.py │ csv_import.py      
+   增删改查 │ JSON 持久化 │ 编号校验 │ 统计 │ 导入导出     
+                  Model 层（数据模型）                     
+   BaseClass │ Teacher │ Experimenter │ Admin │ TeacherAdmin    
+   属性定义    │ 序列化   │  反序列化   │ 多态展示字段                        
 ```
 
 ## 关键设计点

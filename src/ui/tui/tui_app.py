@@ -299,7 +299,9 @@ class Sidebar(Container):
         """菜单选中事件"""
         item = event.item
         if isinstance(item, MenuItem):
-            self.active_index = item.menu_index
+            # 操作类菜单项（索引 6-9）不改变页面高亮，仅触发动作
+            if not (6 <= item.menu_index <= 9):
+                self.active_index = item.menu_index
             self.post_message(MenuSelected(item.menu_index))
 
     def watch_active_index(self, old_index: int, new_index: int) -> None:
@@ -411,6 +413,7 @@ class MainContent(Container):
     def __init__(self, service: PersonService, auto_save: bool):
         self.service = service
         self.auto_save = auto_save
+        self.last_page_index = -1  # 跟踪当前显示的页面索引（操作类菜单项不更新此值）
         super().__init__()
 
     def compose(self) -> ComposeResult:
@@ -433,6 +436,7 @@ class MainContent(Container):
         """处理菜单选中消息"""
         if event.index == -1:
             # Welcome page
+            self.last_page_index = -1
             content = self.query_one("#content-area", Vertical)
             content.remove_children()
             content.mount(self._build_page(event.index))
@@ -475,6 +479,7 @@ class MainContent(Container):
         if name == "删除人员" and not self.service.person_list:
             self.app.notify('记录为空，暂无人员可删除', title='提示', severity='warning', timeout=3)
             return
+        self.last_page_index = event.index
         content = self.query_one("#content-area", Vertical)
         content.remove_children()
         content.mount(self._build_page(event.index))
@@ -489,16 +494,9 @@ class MainContent(Container):
 
     def _refresh_current_page(self) -> None:
         """刷新当前页面数据"""
-        sidebar = self.query_one(Sidebar)
         content = self.query_one("#content-area", Vertical)
-        active_idx = sidebar.active_index
-
-        # 操作类菜单项（索引 6-9）没有对应页面，不重建
-        if active_idx is None or 6 <= active_idx <= 9:
-            return
-
         content.remove_children()
-        content.mount(self._build_page(active_idx))
+        content.mount(self._build_page(self.last_page_index))
 
 
 # ── App 主类 ──
@@ -574,14 +572,9 @@ class PersonTuiApp(App):
         """刷新当前页面的数据"""
         main_content = self.query_one(MainContent)
         main_content.auto_save = self.auto_save_on
-        sidebar = main_content.query_one(Sidebar)
         content = main_content.query_one("#content-area", Vertical)
-        active_idx = sidebar.active_index
-        # 操作类菜单项（索引 6-9）没有对应页面，不重建
-        if active_idx is not None and 6 <= active_idx <= 9:
-            return
         content.remove_children()
-        content.mount(main_content._build_page(active_idx))
+        content.mount(main_content._build_page(main_content.last_page_index))
 
     def action_quit(self) -> None:
         """退出应用"""

@@ -121,10 +121,10 @@ class PersonService:
         """
         # 类名到类对象的映射
         class_map = {c.__name__: c for c in [Teacher, Experimenter, Admin, TeacherAdmin]}
+        self.person_list.clear()  # 先清空，确保无论文件状态如何都从空白开始
         try:
             with open(filename, 'r', encoding='utf-8') as f:
                 data_list = json.load(f)
-            self.person_list.clear()
             seen = set()
             for d in data_list:
                 class_name = d.get('__class__', '')
@@ -136,8 +136,10 @@ class PersonService:
                 if person._person_id not in seen:
                     seen.add(person._person_id)
                     self.person_list.append(person)
-        except (FileNotFoundError, json.JSONDecodeError):
-            pass
+        except FileNotFoundError:
+            pass  # 文件不存在（首次运行），列表保持空
+        except json.JSONDecodeError:
+            print(f'[警告] 数据文件 {filename} 格式错误，已清空人员列表')
 
     def __str__(self):
         return ''.join([str(p) + '\n' for p in self.person_list])
