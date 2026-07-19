@@ -97,6 +97,13 @@ class PersonService:
 
     def get_person_statistics(self) -> Dict[str, int]:
         """统计总人数、性别分布和各类人员数量"""
+        # type_name 到统计 key 的映射
+        type_stat_map = {
+            '教师': STAT_TEACHER,
+            '实验员': STAT_EXPERIMENTER,
+            '行政人员': STAT_ADMIN,
+            '教师兼行政人员': STAT_TEACHER_ADMIN,
+        }
         res = {
             STAT_TOTAL: len(self.person_list),
             STAT_MALE: 0,
@@ -112,15 +119,10 @@ class PersonService:
                 res[STAT_MALE] += 1
             else:
                 res[STAT_FEMALE] += 1
-            # 统计类型（先子类后父类，避免重复计数）
-            if isinstance(p, TeacherAdmin):
-                res[STAT_TEACHER_ADMIN] += 1
-            elif isinstance(p, Teacher):
-                res[STAT_TEACHER] += 1
-            elif isinstance(p, Experimenter):
-                res[STAT_EXPERIMENTER] += 1
-            elif isinstance(p, Admin):
-                res[STAT_ADMIN] += 1
+            # 统计类型（通过多态 type_name 属性）
+            stat_key = type_stat_map.get(p.type_name)
+            if stat_key:
+                res[stat_key] += 1
         return res
 
     def save(self, filename: str = 'data/person.json'):

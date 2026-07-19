@@ -16,6 +16,9 @@ class BaseClass:
     get_fields() 作为钩子方法由子类覆写，实现多态。
     """
 
+    # 人员类型中文名称，子类覆写（用于统计、导出等场景，替代 isinstance 判断）
+    type_name: str = '未知'
+
     def __init__(self, person_id: str, person_name: str, person_gender: str, person_age: str):
         self._person_id = person_id
         self._person_name = person_name
@@ -34,6 +37,10 @@ class BaseClass:
         brief=False: 返回全部特有字段（用于详情页）
         """
         return []
+
+    def get_extra_description(self) -> str:
+        """返回特有字段的描述字符串（用于 CSV 导出），子类覆写"""
+        return ''
 
     @classmethod
     def from_dict(cls, d: dict) -> 'BaseClass':

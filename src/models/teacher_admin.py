@@ -16,6 +16,8 @@ class TeacherAdmin(Teacher, Admin):
     构造函数直接调用 BaseClass.__init__() 而非 super()，绕开 MRO 问题。
     """
 
+    type_name = '教师兼行政人员'
+
     def __init__(self, person_id: str, person_name: str, person_gender: str, person_age: str,
                  department: str, major: str, professional_title: str,
                  political_affiliation: str):
@@ -35,6 +37,9 @@ class TeacherAdmin(Teacher, Admin):
         if brief:
             return [self._department, self._political_affiliation]
         return [self._department, self._major, self._professional_title, self._political_affiliation]
+
+    def get_extra_description(self) -> str:
+        return f"系部:{self._department}, 专业:{self._major}, 职称:{self._professional_title}, 政治面貌:{self._political_affiliation}"
 
     @classmethod
     def from_dict(cls, d: dict):

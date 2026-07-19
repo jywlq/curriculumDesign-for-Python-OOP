@@ -7,6 +7,8 @@ from src.models.base import BaseClass
 class Teacher(BaseClass):
     """教师类，继承 BaseClass，新增系部、专业、职称"""
 
+    type_name = '教师'
+
     def __init__(self, person_id: str, person_name: str, person_gender: str, person_age: str,
                  department: str, major: str, professional_title: str):
         super().__init__(person_id, person_name, person_gender, person_age)
@@ -24,6 +26,9 @@ class Teacher(BaseClass):
         if brief:
             return [self._department, self._professional_title]
         return [self._department, self._major, self._professional_title]
+
+    def get_extra_description(self) -> str:
+        return f"系部:{self._department}, 专业:{self._major}, 职称:{self._professional_title}"
 
     @classmethod
     def from_dict(cls, d: dict):

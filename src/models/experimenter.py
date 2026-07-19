@@ -7,6 +7,8 @@ from src.models.base import BaseClass
 class Experimenter(BaseClass):
     """实验员类，继承 BaseClass，新增所在实验室、职务"""
 
+    type_name = '实验员'
+
     def __init__(self, person_id: str, person_name: str, person_gender: str, person_age: str,
                  laboratory: str, duties: str):
         super().__init__(person_id, person_name, person_gender, person_age)
@@ -23,6 +25,9 @@ class Experimenter(BaseClass):
         if brief:
             return [self._laboratory]
         return [self._laboratory, self._duties]
+
+    def get_extra_description(self) -> str:
+        return f"实验室:{self._laboratory}, 职务:{self._duties}"
 
     @classmethod
     def from_dict(cls, d: dict):

@@ -7,6 +7,8 @@ from src.models.base import BaseClass
 class Admin(BaseClass):
     """行政人员类，继承 BaseClass，新增政治面貌、职称"""
 
+    type_name = '行政人员'
+
     def __init__(self, person_id: str, person_name: str, person_gender: str, person_age: str,
                  political_affiliation: str, professional_title: str):
         super().__init__(person_id, person_name, person_gender, person_age)
@@ -23,6 +25,9 @@ class Admin(BaseClass):
         if brief:
             return [self._professional_title]
         return [self._political_affiliation, self._professional_title]
+
+    def get_extra_description(self) -> str:
+        return f"政治面貌:{self._political_affiliation}, 职称:{self._professional_title}"
 
     @classmethod
     def from_dict(cls, d: dict):
