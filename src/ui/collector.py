@@ -75,7 +75,7 @@ class PersonCollector:
                 continue
             break
         while True:
-            gender = input("请输入性别：")
+            gender = input("请输入性别（男/女）：")
             if gender == '0':
                 raise ReturnBack()
             if not gender.strip():

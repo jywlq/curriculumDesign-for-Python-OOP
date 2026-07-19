@@ -51,6 +51,7 @@ class PersonAddScreen(PersonFormScreen):
                             ("教师兼行政", "TeacherAdmin"),
                         ],
                         prompt="请选择人员类型",
+                        allow_blank=False,
                         id="select-type",
                         classes="field-input",
                     )
@@ -76,6 +77,7 @@ class PersonAddScreen(PersonFormScreen):
                     yield Select(
                         options=[("男", "男"), ("女", "女")],
                         prompt="请选择性别",
+                        allow_blank=False,
                         id="input-gender",
                         classes="field-input",
                     )

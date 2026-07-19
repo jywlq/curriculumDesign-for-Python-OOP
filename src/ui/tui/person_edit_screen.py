@@ -65,6 +65,7 @@ class PersonEditScreen(PersonFormScreen):
                     yield Select(
                         options=[("男", "男"), ("女", "女")],
                         prompt="请选择性别",
+                        allow_blank=False,
                         value=self.person._person_gender,
                         id="input-gender",
                         classes="field-input",
