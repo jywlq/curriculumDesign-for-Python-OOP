@@ -38,21 +38,20 @@ class PersonService:
 
     def find_person(self, person_id: str = '', person_name: str = '') -> List:
         """
-        前缀匹配查询
+        前缀匹配查询（交集筛选）
         
-        无参数时返回全部人员的副本，有参数时按编号/姓名前缀筛选。
+        按编号/姓名前缀取交集筛选，空字符串表示该条件不过滤（匹配所有）。
         返回副本避免外部修改影响内部数据。
         按 _person_id 去重，防止数据源有重复时返回重复条目。
         """
-        if not person_id and not person_name:
-            return self.person_list.copy()
         result = []
         seen = set()
         for p in self.person_list:
-            if p._person_id.startswith(person_id) and p._person_name.startswith(person_name):
-                if p._person_id not in seen:
-                    seen.add(p._person_id)
-                    result.append(p)
+            if (p._person_id.startswith(person_id)
+                    and p._person_name.startswith(person_name)
+                    and p._person_id not in seen):
+                seen.add(p._person_id)
+                result.append(p)
         return result
 
     def update_person(self, person_id: str, person) -> bool:
@@ -72,10 +71,10 @@ class PersonService:
 
     def delete_person(self, person_id: str) -> bool:
         """按编号删除人员"""
-        for p in self.person_list:
-            if p._person_id == person_id:
-                self.person_list.remove(p)
-                return True
+        person = next((p for p in self.person_list if p._person_id == person_id), None)
+        if person:
+            self.person_list.remove(person)
+            return True
         return False
 
     def get_person_statistics(self) -> Dict[str, int]:
