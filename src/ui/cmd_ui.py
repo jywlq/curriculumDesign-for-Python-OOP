@@ -77,14 +77,8 @@ class CmdUI:
                     return
                 filepath = f'data/import/{filename}'
                 persons, skipped = DataImporter.import_csv(filepath)
-                # 过滤编号重复的
-                added = 0
-                for p in persons:
-                    if not self.service.person_id_check(p._person_id):
-                        self.service.add_person(p)
-                        added += 1
-                    else:
-                        skipped += 1
+                added, dup_skipped = self.service.import_persons(persons)
+                skipped += dup_skipped
                 self.data_change()
                 msg = f'导入完成：成功 {added} 条'
                 if skipped > 0:

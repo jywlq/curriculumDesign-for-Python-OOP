@@ -36,6 +36,24 @@ class PersonService:
         self.person_list.append(person)
         return True
 
+    def import_persons(self, persons: List) -> tuple:
+        """
+        批量导入人员（自动去重）
+        
+        将传入的人员列表逐个检查编号，已存在的跳过。
+        Returns:
+            (added, skipped): 成功添加数和跳过数
+        """
+        added = 0
+        skipped = 0
+        for p in persons:
+            if not self.person_id_check(p._person_id):
+                self.person_list.append(p)
+                added += 1
+            else:
+                skipped += 1
+        return added, skipped
+
     def find_person(self, person_id: str = '', person_name: str = '') -> List:
         """
         前缀匹配查询（交集筛选）
