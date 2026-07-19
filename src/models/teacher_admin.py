@@ -45,6 +45,9 @@ class TeacherAdmin(Teacher, Admin):
         data = BaseClass.to_dict(self)
         data.update({
             '__class__': 'TeacherAdmin',
+            'department': self._department,
+            'major': self._major,
+            'professionalTitle': self._professional_title,
             'politicalAffiliation': self._political_affiliation
         })
         return data
