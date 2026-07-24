@@ -1,14 +1,18 @@
 # 高校人员信息管理系统
 
-基于 Python 面向对象设计的高校人员信息管理系统，支持教师、实验员、行政人员、教师兼行政人员四类人员的全生命周期管理。提供 CLI 和 TUI 双界面。
+基于 Python 面向对象设计的高校人员信息管理系统，支持教师、实验员、行政人员、教师兼行政人员四类人员的高效管理。提供 CLI 和 TUI 双界面。
 
 ## 快速开始
 
 ```bash
-# 安装依赖
-pip install textual rich
+#克隆项目到本地：
+git clone https://github.com/jywlq/curriculumDesign-for-Python-OOP.git
+cd curriculumDesign-for-Python-OOP
 
-# TUI 界面（默认，基于 Textual，支持鼠标交互）
+#安装依赖
+pip install -r requirements.txt
+
+# TUI 界面（默认，基于 Textual）
 python main.py
 
 # CLI 界面（传统命令行）
